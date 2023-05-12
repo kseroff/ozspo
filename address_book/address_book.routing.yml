@@ -1,0 +1,31 @@
+address_book.list:
+  path: '/address-book'
+  defaults:
+    _controller: '\Drupal\address_book\Controller\AddressBookController::list'
+    _title: 'Address Book'
+  requirements:
+    _access: 'TRUE'
+
+address_book.add:
+  path: '/address-book/add'
+  defaults:
+    _form: '\Drupal\address_book\Form\AddressBookForm'
+    _title: 'Add a new contact'
+  requirements:
+    _access: 'TRUE'
+
+address_book.edit:
+  path: '/address-book/{contact}/edit'
+  defaults:
+    _form: '\Drupal\address_book\Form\AddressBookForm'
+    _title: 'Edit a contact'
+  requirements:
+    _access: 'TRUE'
+
+address_book.delete:
+  path: '/address-book/{contact}/delete'
+  defaults:
+    _form: '\Drupal\address_book\Form\AddressBookDeleteForm'
+    _title: 'Delete a contact'
+  requirements:
+    _access: 'TRUE'

@@ -2,11 +2,14 @@
 
 namespace Drupal\address_book\Entity;
 
+// Везде импорты потерялись
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 
+// пока что не разобрался, потому просто убрал в комментарий
+// 
 //"delete" = "Drupal\address_book\Form\AddressBookDeleteForm",
 
 /**
@@ -28,11 +31,12 @@ use Drupal\Core\Entity\EntityTypeInterface;
  *     "list_builder" = "Drupal\Core\Entity\EntityListBuilder",
  *     "form" = {
  *       "default" = "Drupal\address_book\Form\AddressBookForm",
- *       
  *     }
  *   },
  * )
  */
+
+//забыл implements 
 class AddressBook extends ContentEntityBase implements ContentEntityInterface {
 
 	public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {

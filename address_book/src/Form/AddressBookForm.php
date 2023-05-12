@@ -36,6 +36,9 @@ class AddressBookForm extends EntityForm {
       '#value' => $this->t('Save'),
     ];
     
+    //render не нужен, да у тебя его ещё и нет
+    //Нужно вернуть форму, в Drupal'е всякие формы возвращают рендер-массивы
+    //если нужно будет отдавать файлы или JSON, то это как и в Symfony
     return $form;
   }
 
@@ -49,6 +52,16 @@ class AddressBookForm extends EntityForm {
     
     $entity->save();
     
+    //Вообще, это не самое лучшее для вывода сообщений, лучше пользоваться классами
+    //
+    //Вот, это лучше будет
+    // |
+    // `-> $this->messenger()->addMessage($this->t('Contact has been saved.'));
+    // 
+    // Либо 
+    // |
+    // `-> Drupal::messenger()->addMessage('...');
+    //
     drupal_set_message($this->t('Contact has been saved.'));
     
     $form_state->setRedirect('address_book.list');

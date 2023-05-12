@@ -4,7 +4,9 @@ namespace Drupal\address_book\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
-use Symfony\Component\HttpFoundation\Response;
+
+// Не нужен здесь
+// use Symfony\Component\HttpFoundation\Response;
 
 class AddressBookController extends ControllerBase {
 

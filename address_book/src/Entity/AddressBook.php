@@ -1,8 +1,16 @@
 <?php
+
 namespace Drupal\address_book\Entity;
 
+// Везде импорты потерялись
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Entity\EntityTypeInterface;
+
+// пока что не разобрался, потому просто убрал в комментарий
+// 
+//"delete" = "Drupal\address_book\Form\AddressBookDeleteForm",
 
 /**
  * Defines the address book entity.
@@ -23,51 +31,50 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "list_builder" = "Drupal\Core\Entity\EntityListBuilder",
  *     "form" = {
  *       "default" = "Drupal\address_book\Form\AddressBookForm",
- *       "delete" = "Drupal\address_book\Form\AddressBookDeleteForm",
  *     }
  *   },
  * )
  */
-class AddressBook extends ContentEntityBase {
 
-  public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
-    $fields = parent::baseFieldDefinitions($entity_type);
-     
-    $fields['field_full_name'] = BaseFieldDefinition::create('string')
-      ->setLabel(t('Full Name'))
-      ->setDescription(t('The full name of the contact.'))
-      ->setRequired(TRUE)
-      ->setTranslatable(FALSE)
-      ->setRevisionable(FALSE)
-      ->setDisplayOptions('form', [
-        'type' => 'string_textfield',
-        'weight' => -6,
-      ]);
-      
-    $fields['field_phone_number'] = BaseFieldDefinition::create('string')
-      ->setLabel(t('Phone Number'))
-      ->setDescription(t('The phone number of the contact.'))
-      ->setRequired(FALSE)
-      ->setTranslatable(FALSE)
-      ->setRevisionable(FALSE)
-      ->setDisplayOptions('form', [
-        'type' => 'string_textfield',
-        'weight' => -5,
-      ]);
-      
-    $fields['field_job_title'] = BaseFieldDefinition::create('string')
-      ->setLabel(t('Job Title'))
-      ->setDescription(t('The job title of the contact.'))
-      ->setRequired(FALSE)
-      ->setTranslatable(FALSE)
-      ->setRevisionable(FALSE)
-      ->setDisplayOptions('form', [
-        'type' => 'string_textfield',
-        'weight' => -4,
-      ]);
+//забыл implements 
+class AddressBook extends ContentEntityBase implements ContentEntityInterface {
 
+	public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
+		$fields = parent::baseFieldDefinitions($entity_type);
 
-    return $fields;
-  }
+		$fields['field_full_name'] = BaseFieldDefinition::create('string')
+			->setLabel(t('Full Name'))
+			->setDescription(t('The full name of the contact.'))
+			->setRequired(TRUE)
+			->setTranslatable(FALSE)
+			->setRevisionable(FALSE)
+			->setDisplayOptions('form', [
+		    'type' => 'string_textfield',
+		    'weight' => -6,
+		]);
+
+		$fields['field_phone_number'] = BaseFieldDefinition::create('string')
+			->setLabel(t('Phone Number'))
+			->setDescription(t('The phone number of the contact.'))
+			->setRequired(FALSE)
+			->setTranslatable(FALSE)
+			->setRevisionable(FALSE)
+			->setDisplayOptions('form', [
+		    'type' => 'string_textfield',
+		    'weight' => -5,
+		]);
+
+		$fields['field_job_title'] = BaseFieldDefinition::create('string')
+			->setLabel(t('Job Title'))
+			->setDescription(t('The job title of the contact.'))
+			->setRequired(FALSE)
+			->setTranslatable(FALSE)
+			->setRevisionable(FALSE)
+			->setDisplayOptions('form', [
+		    'type' => 'string_textfield',
+		    'weight' => -4,
+		]);
+		return $fields;
+	}
 
 }

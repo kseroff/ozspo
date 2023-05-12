@@ -43,7 +43,7 @@ class AddressBookController extends ControllerBase {
       '#empty' => $this->t('There are no contacts yet.'),
     ];
     
-    return new Response(render($table));
+    return $table;
   }
 
 }

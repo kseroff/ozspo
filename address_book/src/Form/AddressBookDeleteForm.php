@@ -2,8 +2,9 @@
 namespace Drupal\address_book\Form;
 
 use Drupal\Core\Entity\ContentEntityConfirmFormBase;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
-
+/*
 class AddressBookDeleteForm extends ContentEntityConfirmFormBase {
 
   public function getCancelURL() {
@@ -41,3 +42,4 @@ class AddressBookDeleteForm extends ContentEntityConfirmFormBase {
   }
 
 }
+ */

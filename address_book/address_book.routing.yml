@@ -1,35 +1,31 @@
 address_book.list:
-  path: '/address-book'
+  path: '/address_book/list'
   defaults:
     _controller: '\Drupal\address_book\Controller\AddressBookController::list'
-    _title: 'Address Book'
   requirements:
     _permission: 'access content'
     _access: 'TRUE'
 
-address_book.add:
-  path: '/address-book/add'
+address_book.delete:
+  path: '/address_book/delete/{id}'
   defaults:
-    _form: '\Drupal\address_book\Form\AddressBookForm'
-    _title: 'Add a new contact'
+    _controller: '\Drupal\address_book\Controller\AddressBookController::delete'
+  requirements:
+    _permission: 'delete contact'
+    _access: 'TRUE'
+
+address_book.add_form:
+  path: '/address_book/add'
+  defaults:
+    _form: '\Drupal\address_book\Form\AddForm'
   requirements:
     _permission: 'add contact'
     _access: 'TRUE'
 
 address_book.edit:
-  path: '/address-book/{contact}/edit'
+  path: '/address_book/edit/{id}'
   defaults:
-    _form: '\Drupal\address_book\Form\AddressBookForm'
-    _title: 'Edit a contact'
+    _form: '\Drupal\address_book\Form\EditForm'
   requirements:
     _permission: 'edit contact'
-    _access: 'TRUE'
-
-address_book.delete:
-  path: '/address-book/{contact}/delete'
-  defaults:
-    _form: '\Drupal\address_book\Form\AddressBookDeleteForm'
-    _title: 'Delete a contact'
-  requirements:
-    _permission: 'delete contact'
     _access: 'TRUE'

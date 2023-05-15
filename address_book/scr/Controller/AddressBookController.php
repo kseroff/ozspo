@@ -75,6 +75,7 @@ class AddressBookController extends ControllerBase {
     return $build;
   }
 
+  // пока закоментировал. Главное обычное настроить
   /*
   public function delete($id) {
     $entity = AddressBook::load($id);

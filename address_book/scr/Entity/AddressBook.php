@@ -38,7 +38,7 @@ use Drupal\Core\Entity\ContentEntityInterface;
  *   },
  * )
  */
-class AddressBook extends ContentEntityBase implements ContentEntityInterface{
+class AddressBook extends ContentEntityBase implements ContentEntityInterface {
 
   public static function getBaseFieldDefinitions(EntityTypeInterface $entity_type) {
     $fields = [];

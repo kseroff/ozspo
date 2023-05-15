@@ -50,6 +50,8 @@ class EditForm extends FormBase {
     return $form;
   }
 
+  // пока закоменчено
+  /*
   public function validateForm(array &$form, FormStateInterface $form_state) {
     $phones = $form_state->getValue('phones');
     if (!empty($phones)) {
@@ -59,7 +61,7 @@ class EditForm extends FormBase {
       }
     }
   }
-
+*/
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $entity = $form['#entity'];
     $entity->set('fio', $form_state->getValue('fio'));

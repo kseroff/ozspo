@@ -6,14 +6,6 @@ address_book.list:
     _permission: 'access content'
     _access: 'TRUE'
 
-address_book.delete:
-  path: '/address_book/delete/{id}'
-  defaults:
-    _controller: '\Drupal\address_book\Controller\AddressBookController::delete'
-  requirements:
-    _permission: 'delete contact'
-    _access: 'TRUE'
-
 address_book.add_form:
   path: '/address_book/add'
   defaults:

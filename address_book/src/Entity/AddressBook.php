@@ -7,8 +7,6 @@ use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\ContentEntityInterface;
 
-//"delete" = "Drupal\address_book\Form\AddressBookDeleteForm",
-
 /**
  * Определение сущности Address Book.
  *
@@ -16,13 +14,15 @@ use Drupal\Core\Entity\ContentEntityInterface;
  *   id = "address_book",
  *   label = @Translation("Address Book"),
  *   handlers = {
+ *     "storage" = "Drupal\Core\Entity\Sql\SqlContentEntityStorage",
+ *     "access" = "Drupal\Core\Entity\EntityAccessControlHandler",
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
  *     "list_builder" = "Drupal\Core\Entity\EntityListBuilder",
  *     "views_data" = "Drupal\views\EntityViewsData",
  *     "form" = {
- *       "default" = "Drupal\address_book\Form\AddressBookForm",
- *       "add" = "Drupal\address_book\Form\AddressBookForm",
- *       "edit" = "Drupal\address_book\Form\AddressBookForm",
+ *       "default" = "Drupal\address_book\Form\AddForm",
+ *       "add" = "Drupal\address_book\Form\AddForm",
+ *       "edit" = "Drupal\address_book\Form\EditForm",
  *     },
  *   },
  *   base_table = "address_book",

@@ -9,11 +9,11 @@ use Drupal\Core\Link;
 use Drupal\Core\Form\FormBuilder;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-// use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class AddressBookController extends ControllerBase {
 
-  public $formBuilder;
+  protected $formBuilder;
 
   public function __construct(FormBuilder $formBuilder) {
     $this->formBuilder = $formBuilder;
@@ -76,7 +76,7 @@ class AddressBookController extends ControllerBase {
   }
 
   // пока закоментировал. Главное обычное настроить
-  /*
+  
   public function delete($id) {
     $entity = AddressBook::load($id);
     if ($entity) {
@@ -85,5 +85,5 @@ class AddressBookController extends ControllerBase {
     }
     return new RedirectResponse('/address_book/list');
   }
-  */
+  
 }

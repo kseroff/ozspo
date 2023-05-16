@@ -2,12 +2,14 @@
 
 namespace Drupal\address_book\Form;
 
-use Drupal\Core\Form\Form;
+
+//use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 
 use Drupal\address_book\Entity\AddressBook;
 
+//class AddForm extends EntityForm{
 class AddForm extends FormBase {
 
   public function getFormId() {
@@ -15,6 +17,10 @@ class AddForm extends FormBase {
   }
 
   public function buildForm(array $form, FormStateInterface $form_state) {
+    
+    //$form = parent::buildForm($form, $form_state);
+    //$entity = $this->entity;
+    
     $form['fio'] = [
       '#type' => 'textfield',
       '#required' => TRUE,
@@ -63,9 +69,9 @@ class AddForm extends FormBase {
     ]);
     $entity->save();
     
-    //drupal_set_message(t('Запись была добавлена.'));
+    drupal_set_message(t('Запись была добавлена.'));
     
-    $this->messenger()->addMessage($this->t('Запись была добавлена.'));
+    //$this->messenger()->addMessage($this->t('Запись была добавлена.'));
     
     $form_state->setRedirect('address_book.list');
   }

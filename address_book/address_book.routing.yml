@@ -21,3 +21,11 @@ address_book.edit:
   requirements:
     _permission: 'edit contact'
     _access: 'TRUE'
+
+address_book.delete:
+  path: '/address_book/delete/{id}'
+  defaults:
+    _controller: '\Drupal\address_book\Controller\AddressBookController::delete'
+  requirements:
+    _permission: 'delete contact'
+    _access: 'TRUE'

@@ -15,6 +15,7 @@ class EditForm extends FormBase {
 
   public function buildForm(array $form, FormStateInterface $form_state, $id = NULL) {
     $entity = AddressBook::load($id);
+    
     if (!$entity) {
       drupal_set_message(t('Запись не найдена.'), 'error');
       $form_state->setRedirect('address_book.list');

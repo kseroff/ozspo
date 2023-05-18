@@ -15,3 +15,21 @@ address_book.add:
   requirements:
     _permission: 'create address_book content'
     _access: 'TRUE'
+
+address_book.edit:
+  path: '/address_book/edit/{id}'
+  defaults:
+    _form: '\Drupal\address_book\Form\AddressBookFormEdit'
+    _title_: 'edit contact'
+  requirements:
+    _permission: 'edit address_book content'
+    _access: 'TRUE'
+
+address_book.delete:
+  path: '/address_book/delete/{id}'
+  defaults:
+    _controller: '\Drupal\address_book\Controller\AddressBookController::delete'
+    _title: 'Delete Address Book Entry'
+  requirements:
+    _permission: 'delete address_book content'
+    _access: 'TRUE'

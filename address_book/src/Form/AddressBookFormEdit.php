@@ -4,6 +4,7 @@ namespace Drupal\address_book\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Url;
 use Drupal\address_book\Entity\AddressBook;
 
 class AddressBookFormEdit extends FormBase {
@@ -12,35 +13,41 @@ class AddressBookFormEdit extends FormBase {
    * {@inheritdoc}
    */
   public function getFormId() {
-    return 'address_book_form_edit';
+    return 'address_book_edit_form';
   }
 
   /**
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state, $id = NULL) {
-    $contact = AddressBook::load($id);
+   
+    $entity = AddressBook::load($id);
 
-    if (!$contact) {
+    if (!$entity) {
+     
+      $form['error'] = [
+        '#markup' => $this->t('The specified address book entry does not exist.'),
+      ];
       return $form;
     }
 
+    
     $form['name'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Full Name'),
+      '#default_value' => $entity->get('field_full_name')->value,
       '#required' => TRUE,
-      '#default_value' => $contact->get('field_full_name')->value,
     ];
     $form['phone'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Phone Number'),
-      '#default_value' => $contact->get('field_phone_number')->value,
+      '#default_value' => $entity->get('field_phone_number')->value,
     ];
     $form['position'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Job Title'),
+      '#default_value' => $entity->get('field_job_title')->value,
       '#required' => TRUE,
-      '#default_value' => $contact->get('field_job_title')->value,
     ];
 
     $form['actions']['submit'] = [
@@ -48,7 +55,11 @@ class AddressBookFormEdit extends FormBase {
       '#value' => $this->t('Save'),
     ];
 
-    $form_state->set('contact_id', $id);
+    
+    $form['id'] = [
+      '#type' => 'hidden',
+      '#value' => $id,
+    ];
 
     return $form;
   }
@@ -64,23 +75,22 @@ class AddressBookFormEdit extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $id = $form_state->get('contact_id');
-    $contact = AddressBook::load($id);
+    
+    $id = $form_state->getValue('id');
+    $entity = AddressBook::load($id);
 
-    if (!$contact) {
+    if (!$entity) {
+     
+      $form_state->setError($form, $this->t('The specified address book entry does not exist.'));
       return;
     }
 
-    $name = $form_state->getValue('name');
-    $phone = $form_state->getValue('phone');
-    $position = $form_state->getValue('position');
+    $entity->set('field_full_name', $form_state->getValue('name'));
+    $entity->set('field_phone_number', $form_state->getValue('phone'));
+    $entity->set('field_job_title', $form_state->getValue('position'));
+    $entity->save();
 
-    $contact->set('field_full_name', $name);
-    $contact->set('field_phone_number', $phone);
-    $contact->set('field_job_title', $position);
-    $contact->save();
-
-    $form_state->setRedirect('address_book.list');
+    $form_state->setRedirectUrl(Url::fromRoute('address_book.list'));
   }
 
 }

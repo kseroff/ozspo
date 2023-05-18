@@ -1,89 +1,67 @@
 <?php
-
 namespace Drupal\address_book\Controller;
 
-use Drupal\address_book\Entity\AddressBook;
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\Core\Url;
 use Drupal\Core\Link;
-use Drupal\Core\Form\FormBuilder;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-
-use Symfony\Component\HttpFoundation\RedirectResponse;
+use Drupal\Core\Url;
 
 class AddressBookController extends ControllerBase {
 
-  protected $formBuilder;
-
-  public function __construct(FormBuilder $formBuilder) {
-    $this->formBuilder = $formBuilder;
-  }
-
-  public static function create(ContainerInterface $container)
-  {
-    return new static(
-      $container->get('form_builder')
-    );
-  }
-
   public function list() {
+    // Получить список контактов
+    $contacts = \Drupal::entityTypeManager()->getStorage('address_book')->loadMultiple();
+    
+    // Создание таблицы
     $header = [
-      ['data' => 'ФИО'],
-      ['data' => 'Телефон'],
-      ['data' => 'Должность'],
-      ['data' => ''],
-      ['data' => ''],
+      'id' => $this->t('ID'),
+      'field_full_name' => $this->t('Full Name'),
+      'field_phone_number' => $this->t('Phone Number'),
+      'field_job_title' => $this->t('Job Title'),
+      'edit' => $this->t('Edit'),
+      'delete' => $this->t('Delete'),
     ];
-
+    
     $rows = [];
-
-    // Получаем список записей из базы данных
-    $query = \Drupal::database()->select('address_book', 'ab');
-    $query->fields('ab', ['id', 'fio', 'phones', 'position']);
-    $results = $query->execute()->fetchAll();
-
-    foreach ($results as $result) {
-      $delete_url = Url::fromRoute('address_book.delete', ['id' => $result->id])->toString();
-      $edit_url = Url::fromRoute('address_book.edit', ['id' => $result->id])->toString();
-
-      $delete_link = Link::fromTextAndUrl('Удалить', $delete_url);
-      $edit_link = Link::fromTextAndUrl('Редактировать', $edit_url);
-
+    
+    foreach ($contacts as $contact) {
       $rows[] = [
-        $result->fio,
-        $result->phones,
-        $result->position,
-        $edit_link,
-        $delete_link,
+        'id' => $contact->id(),
+        'field_full_name' => $contact->get('field_full_name')->value,
+        'field_phone_number' => $contact->get('field_phone_number')->value,
+        'field_job_title' => $contact->get('field_job_title')->value,
+        'edit' => Link::fromTextAndUrl($this->t('Edit'), Url::fromRoute('address_book.edit', ['contact' => $contact->id()])),
+        'delete' => Link::fromTextAndUrl($this->t('Delete'), Url::fromRoute('address_book.delete', ['contact' => $contact->id()])),
       ];
     }
 
-    $build = [
-      'address_book_list' => [
-        '#theme' => 'table',
-        '#header' => $header,
-        '#rows' => $rows,
-        '#empty' => t('Нет записей.'),
-      ],
-      'address_book_add' => [
-        '#type' => 'link',
-        '#title' => 'Добавить запись',
-        '#url' => Url::fromRoute('address_book.add_form'),
-      ],
+    // Создал таблицу и вернул ее в качестве ответа
+    $table = [
+      '#type' => 'table',
+      '#header' => $header,
+      '#rows' => $rows,
+      '#empty' => $this->t('There are no contacts yet.'),
     ];
-
-    return $build;
+    
+    return $table;
   }
 
-  // пока закоментировал. Главное обычное настроить
-  
+/**
+   * Deletes an address book entry.
+   *
+   * @param int $id
+   *   The ID of the address book entry to delete.
+   *
+   * @return \Symfony\Component\HttpFoundation\RedirectResponse
+   *   Redirects to the address book list.
+   */
   public function delete($id) {
-    $entity = AddressBook::load($id);
-    if ($entity) {
-      $entity->delete();
-      drupal_set_message(t('Запись была удалена.'));
+    $storage = \Drupal::entityTypeManager()->getStorage('node');
+    $node = $storage->load($id);
+    if ($node) {
+      $node->delete();
     }
-    return new RedirectResponse('/address_book/list');
+    return $this->redirect('address_book.list');
   }
+
   
 }

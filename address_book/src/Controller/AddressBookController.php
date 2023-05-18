@@ -36,6 +36,11 @@ class AddressBookController extends ControllerBase {
       ];
     }
 
+    $addLink = Link::fromTextAndUrl($this->t('Add Contact'), Url::fromRoute('address_book.add'));
+    $addLink = $addLink->toRenderable();
+    $addLink['#attributes'] = ['class' => ['button']];
+    $addLink = ['#markup' => render($addLink)];
+
     // Создал таблицу и вернул ее в качестве ответа
     $table = [
       '#type' => 'table',
@@ -43,6 +48,11 @@ class AddressBookController extends ControllerBase {
       '#rows' => $rows,
       '#empty' => $this->t('There are no contacts yet.'),
     ];
+
+        // Добавление кнопки в таблицу
+        $table['#footer'] = [
+          'add_link' => $addLink,
+        ];
 
     return $table;
   }

@@ -33,3 +33,12 @@ address_book.delete:
   requirements:
     _permission: 'delete address_book content'
     _access: 'TRUE'
+
+address_book.search:
+  path: '/address-book/search'
+  defaults:
+    _controller: '\Drupal\address_book\Controller\AddressBookController::searchByLastName'
+    _title: 'Search Results'
+  requirements:
+    _permission: 'access content'
+    _access: 'TRUE'

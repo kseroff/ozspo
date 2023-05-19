@@ -12,7 +12,7 @@ class AddressBookController extends ControllerBase {
   public function list() {
     // Получить список контактов
     $contacts = \Drupal::entityTypeManager()->getStorage('address_book')->loadMultiple();
-
+  
     // Создание таблицы
     $header = [
       'id' => $this->t('ID'),
@@ -22,9 +22,9 @@ class AddressBookController extends ControllerBase {
       'edit' => $this->t('Edit'),
       'delete' => $this->t('Delete'),
     ];
-
+  
     $rows = [];
-
+  
     foreach ($contacts as $contact) {
       $rows[] = [
         'id' => $contact->id(),
@@ -35,13 +35,14 @@ class AddressBookController extends ControllerBase {
         'delete' => Link::fromTextAndUrl($this->t('Delete'), Url::fromRoute('address_book.delete', ['id' => $contact->id()])),
       ];
     }
-
+  
+    // Создание кнопки "Add Contact"
     $addLink = Link::fromTextAndUrl($this->t('Add Contact'), Url::fromRoute('address_book.add'));
     $addLink = $addLink->toRenderable();
     $addLink['#attributes'] = ['class' => ['button']];
     $addLink = ['#markup' => render($addLink)];
 
-    // Создал таблицу и вернул ее в качестве ответа
+    // Создание таблицы
     $table = [
       '#type' => 'table',
       '#header' => $header,
@@ -49,12 +50,12 @@ class AddressBookController extends ControllerBase {
       '#empty' => $this->t('There are no contacts yet.'),
     ];
 
-        // Добавление кнопки в таблицу
-        $table['#footer'] = [
-          'add_link' => $addLink,
-        ];
+    // Создание строки поиска
+    $searchForm = \Drupal::formBuilder()->getForm('\Drupal\address_book\Form\SearchForm');
+    $searchForm['#prefix'] = render($addLink);
+    $searchForm['#suffix'] = render($table);
 
-    return $table;
+    return $searchForm;
   }
 
   /**
@@ -88,5 +89,6 @@ class AddressBookController extends ControllerBase {
     $form = \Drupal::formBuilder()->getForm('\Drupal\address_book\Form\AddressBookFormEdit', $id);
     return $form;
   }
+
 
 }

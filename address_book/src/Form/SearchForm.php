@@ -5,29 +5,56 @@ namespace Drupal\address_book\Form;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 
+/**
+ * Provides a search form for the address book.
+ */
 class SearchForm extends FormBase {
 
+  /**
+   * {@inheritdoc}
+   */
   public function getFormId() {
     return 'address_book_search_form';
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    $form['last_name'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Last Name'),
+    $form['search'] = [
+      '#type' => 'search',
+      '#title' => $this->t('Поиск'),
+      '#attributes' => [
+        'placeholder' => $this->t('Введите полное имя для поиска'),
+      ],
     ];
 
-    $form['submit'] = [
+    $form['actions'] = [
+      '#type' => 'actions',
+    ];
+
+    $form['actions']['submit'] = [
       '#type' => 'submit',
-      '#value' => $this->t('Search'),
+      '#value' => $this->t('Найти'),
     ];
 
     return $form;
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function validateForm(array &$form, FormStateInterface $form_state) {
+    // Валидация формы поиска, если необходимо.
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $last_name = $form_state->getValue('last_name');
-    $form_state->setRedirect('address_book.search', ['last_name' => $last_name]);
+    $searchTerm = $form_state->getValue('search');
+    $url = \Drupal\Core\Url::fromRoute('address_book.list', ['q' => $searchTerm]);
+    $form_state->setRedirectUrl($url);
   }
 
 }

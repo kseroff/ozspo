@@ -3,6 +3,7 @@
 namespace Drupal\address_book\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Symfony\Component\HttpFoundation\Request;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
 use Drupal\address_book\Entity\AddressBook;
@@ -23,7 +24,7 @@ class AddressBookController extends ControllerBase {
     ];
 
       // Создание кнопки "Add Contact"
-      $addLink = Link::fromTextAndUrl($this->t('Добавь Контакт'), Url::fromRoute('address_book.add'));
+      $addLink = Link::fromTextAndUrl($this->t('Добавить Контакт'), Url::fromRoute('address_book.add'));
       $addLink = $addLink->toRenderable();
       $addLink['#attributes'] = ['class' => ['button']];
       $addLink = ['#markup' => render($addLink)];
@@ -41,7 +42,7 @@ class AddressBookController extends ControllerBase {
             '#type' => 'dropbutton',
             '#links' => [
               'edit' => [
-                'title' => $this->t('Изменить'),
+                'title' => $this->t('Редактировать'),
                 'url' => Url::fromRoute('address_book.edit', ['id' => $contact->id()]),
               ],
               'delete' => [
@@ -67,9 +68,12 @@ class AddressBookController extends ControllerBase {
     ];
 
      // Создание строки поиска
-     $searchForm = \Drupal::formBuilder()->getForm('\Drupal\address_book\Form\SearchForm');
-     $searchForm['#prefix'] = render($addLink);
-     $searchForm['#suffix'] = render($table);
+$searchForm = \Drupal::formBuilder()->getForm('\Drupal\address_book\Form\SearchForm', [], ['method' => 'get']);
+$searchForm['#prefix'] = render($addLink);
+$searchForm['#suffix'] = render($table);
+$searchForm['#submit'][] = '::searchFormSubmitHandler'; // Добавьте обработчик отправки формы поиска
+
+return $searchForm;
 
     return $searchForm;
   }
@@ -104,6 +108,75 @@ class AddressBookController extends ControllerBase {
   public function edit($id) {
     $form = \Drupal::formBuilder()->getForm('\Drupal\address_book\Form\AddressBookFormEdit', $id);
     return $form;
+  }
+
+  public function search(Request $request) {
+    // Получение поискового запроса из параметров URL.
+    $searchTerm = $request->query->get('q');
+  
+    // Получить список контактов, удовлетворяющих поисковому запросу.
+    $query = \Drupal::entityQuery('address_book')
+      ->condition('field_full_name', '%' . $searchTerm . '%', 'LIKE');
+    $contact_ids = $query->execute();
+    $contacts = \Drupal::entityTypeManager()->getStorage('address_book')->loadMultiple($contact_ids);
+  
+    // Создание обновленной таблицы контактов.
+    $header = [
+      'id' => $this->t('ID'),
+      'field_full_name' => $this->t('Полное имя'),
+      'field_phone_number' => $this->t('Номер телефона'),
+      'field_job_title' => $this->t('Должность'),
+      'options' => $this->t('Опции'),
+    ];
+  
+    $rows = [];
+  
+    foreach ($contacts as $contact) {
+      $rows[] = [
+        'id' => $contact->id(),
+        'field_full_name' => $contact->get('field_full_name')->value,
+        'field_phone_number' => $contact->get('field_phone_number')->value,
+        'field_job_title' => $contact->get('field_job_title')->value,
+        'options' => [
+          'data' => [
+            '#type' => 'dropbutton',
+            '#links' => [
+              'edit' => [
+                'title' => $this->t('Редактировать'),
+                'url' => Url::fromRoute('address_book.edit', ['id' => $contact->id()]),
+              ],
+              'delete' => [
+                'title' => $this->t('Удалить'),
+                'url' => Url::fromRoute('address_book.delete', ['id' => $contact->id()]),
+              ],
+            ],
+            '#attributes' => ['class' => ['options']],
+            '#attached' => [
+              'library' => ['core/drupal.dropbutton'],
+            ],
+          ],
+        ],
+      ];
+    }
+  
+    $table = [
+      '#type' => 'table',
+      '#header' => $header,
+      '#rows' => $rows,
+      '#empty' => $this->t('Нет контактов.'),
+    ];
+  
+    // Возвращение обновленной таблицы в формате JSON.
+    $response = new AjaxResponse();
+    $response->addCommand(new HtmlCommand('#table-wrapper', render($table)));
+    return $response;
+  }
+
+  public function searchFormSubmitHandler(array &$form, FormStateInterface $form_state) {
+    $searchTerm = $form_state->getValue('search'); // Получение значения поля поиска
+  
+    $url = Url::fromRoute('address_book.search', [], ['query' => ['q' => $searchTerm]]);
+    $form_state->setRedirectUrl($url); // Редирект на метод search с передачей поискового запроса в качестве параметра
   }
 
 }

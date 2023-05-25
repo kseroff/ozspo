@@ -6,6 +6,7 @@ use Drupal\Core\Controller\ControllerBase;
 use Symfony\Component\HttpFoundation\Request;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
+use Drupal\address_book\Controller\AjaxResponse;
 use Drupal\address_book\Entity\AddressBook;
 
 class AddressBookController extends ControllerBase {
@@ -74,8 +75,6 @@ $searchForm['#suffix'] = render($table);
 $searchForm['#submit'][] = '::searchFormSubmitHandler'; // Добавьте обработчик отправки формы поиска
 
 return $searchForm;
-
-    return $searchForm;
   }
 
   /**

@@ -53,7 +53,7 @@ class SearchForm extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $searchTerm = $form_state->getValue('search');
-    $url = \Drupal\Core\Url::fromRoute('address_book.list', ['q' => $searchTerm]);
+    $url = \Drupal\Core\Url::fromRoute('address_book.search', [], ['query' => ['q' => $searchTerm]]);
     $form_state->setRedirectUrl($url);
   }
 

@@ -12,8 +12,12 @@ use Drupal\Core\Url;
 class AddressBookController extends ControllerBase {
 
   public function list() {
-    // Получить список контактов
-    $contacts = \Drupal::entityTypeManager()->getStorage('address_book')->loadMultiple();
+
+// Получить список контактов и отсортировать их по полному имени
+$query = \Drupal::entityQuery('address_book');
+$query->sort('field_full_name', 'ASC');
+$contact_ids = $query->execute();
+$contacts = \Drupal::entityTypeManager()->getStorage('address_book')->loadMultiple($contact_ids);
 
     // Создание таблицы
     $header = [
@@ -60,13 +64,13 @@ class AddressBookController extends ControllerBase {
       ];
     }
 
-    // Создание таблицы
-    $table = [
-      '#type' => 'table',
-      '#header' => $header,
-      '#rows' => $rows,
-      '#empty' => $this->t('There are no contacts yet.'),
-    ];
+  // Создание таблицы
+  $table = [
+    '#type' => 'table',
+    '#header' => $header,
+    '#rows' => $rows,
+    '#empty' => $this->t('There are no contacts yet.'),
+  ];
 
      // Создание строки поиска
 $searchForm = \Drupal::formBuilder()->getForm('\Drupal\address_book\Form\SearchForm', [], ['method' => 'get']);
@@ -179,3 +183,5 @@ return $searchForm;
   }
 
 }
+
+

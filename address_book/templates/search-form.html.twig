@@ -1,8 +1,6 @@
-{# templates/search-form.html.twig #}
-
-<form id="search-form" method="GET" action="{{ path('address_book.list') }}">
-  <div class="search-form-wrapper">
+<div class="search-form-wrapper">
+  <div class="search-input-wrapper">
     <input type="search" id="edit-search" name="q" placeholder="{{ 'Введите полное имя для поиска'|t }}" value="{{ query }}" />
-    <button type="submit">{{ 'Найти'|t }}</button>
+    <button type="submit" class="search-button">{{ 'Найти'|t }}</button>
   </div>
-</form>
+</div>

@@ -1,0 +1,30 @@
+my_notes.note_add:
+  path: '/note/add'
+  defaults:
+    _entity_form: 'note.default'
+    _title: 'Create Note'
+  requirements:
+    _access: 'TRUE'
+
+my_notes.note_edit:
+  path: '/note/{note}/edit'
+  defaults:
+    _entity_form: 'note.edit'
+    _title: 'Edit Note'
+  requirements:
+    _entity_access: 'note.update'
+    _access: 'TRUE'
+    
+my_notes.note_list:
+  path: '/note'
+  defaults:
+    _entity_list: 'note'
+  requirements:
+    _access: 'TRUE'
+
+entity.note.canonical:
+  path: '/note/{note}'
+  defaults:
+    _entity_view: 'note'
+  requirements:
+    _access: 'TRUE'

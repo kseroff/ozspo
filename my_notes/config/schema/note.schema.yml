@@ -1,0 +1,42 @@
+note:
+  type: entity
+  label: 'Note'
+  base_table: note
+  entity_keys:
+    id:
+      type: int
+      unsigned: true
+      not null: true
+      auto_increment: true
+    uuid:
+      type: uuid
+      not null: true
+    label:
+      type: varchar
+      length: 256
+      not null: true
+    body:
+      type: text
+      not null: false
+    author:
+      type: int
+      not null: true
+    created:
+      type: int
+      not null: true
+    changed:
+      type: int
+      not null: true
+  indexes:
+    primary:
+      type: primary
+      fields:
+        - id
+    uuid:
+      type: unique
+      fields:
+        - uuid
+    label:
+      type: index
+      fields:
+        - label

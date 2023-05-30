@@ -5,7 +5,6 @@ namespace Drupal\address_book\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Symfony\Component\HttpFoundation\Request;
 use Drupal\Core\Form\FormStateInterface;
-use Symfony\Component\HttpFoundation\Response;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
 
@@ -122,10 +121,15 @@ return $output;
   public function search(Request $request) {
     // Получение поискового запроса из параметров URL.
     $searchTerm = $request->query->get('q');
+
+    if (empty($searchTerm)) {
+      // если пустая то  Перенаправление на главную страницу
+      return $this->redirect('address_book.list');
+  }
   
     // Получить список контактов, удовлетворяющих поисковому запросу.
-    $query = \Drupal::entityQuery('address_book')
-      ->condition('field_full_name', '%' . $searchTerm . '%', 'LIKE');
+    $query = \Drupal::entityQuery('address_book')->condition('field_full_name', '%' . $searchTerm . '%', 'LIKE');
+    $query->sort('field_full_name', 'ASC');
     $contact_ids = $query->execute();
     $contacts = \Drupal::entityTypeManager()->getStorage('address_book')->loadMultiple($contact_ids);
   
@@ -137,6 +141,12 @@ return $output;
       'field_job_title' => $this->t('Должность'),
       'options' => $this->t('Опции'),
     ];
+
+        // Создание кнопки "Add Contact"
+        $addLink = Link::fromTextAndUrl($this->t('Добавить Контакт'), Url::fromRoute('address_book.add'));
+        $addLink = $addLink->toRenderable();
+        $addLink['#attributes'] = ['class' => ['button']];
+        $addLink = ['#markup' => render($addLink)];
   
     $rows = [];
   
@@ -174,19 +184,30 @@ return $output;
       '#rows' => $rows,
       '#empty' => $this->t('Нет контактов.'),
     ];
-  
-    // Возвращение обновленной таблицы в формате HTML.
-    $content = '<div id="address-book-table">' . render($table) . '</div>';
-    return [
-      '#markup' => $content,
-    ];
+
+       // Создание формы поиска
+$searchForm = \Drupal::formBuilder()->getForm('\Drupal\address_book\Form\SearchForm');
+$searchForm['#prefix'] = render($addLink);
+$searchForm['#suffix'] = '<div id="address-book-table">' . render($table) . '</div>';
+$searchForm['search']['#value'] = $searchTerm;
+
+    // Добавление строки поиска и кнопки добавления
+$output = [
+  '#prefix' => '<div class="address-book-wrapper">',
+  '#suffix' => '</div>',
+];
+$output['search_form'] = $searchForm;
+$output['table'] = $table;
+
+return $output;
+
   }
 
   public function searchFormSubmitHandler(array &$form, FormStateInterface $form_state) {
     $searchTerm = $form_state->getValue('search');
   
     // Перенаправьте на метод search с передачей поискового запроса в качестве параметра
-    $url = Url::fromRoute('address_book.search', [], ['query' => ['q' => $searchTerm]]);
+    $url = Url::fromRoute('address_book.search', ['q' => $searchTerm]);
     $form_state->setRedirectUrl($url);
   }
 

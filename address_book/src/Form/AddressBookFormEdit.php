@@ -34,25 +34,25 @@ class AddressBookFormEdit extends FormBase {
     
     $form['name'] = [
       '#type' => 'textfield',
-      '#title' => $this->t('Full Name'),
+      '#title' => $this->t('Полное имя'),
       '#default_value' => $entity->get('field_full_name')->value,
       '#required' => TRUE,
     ];
     $form['phone'] = [
       '#type' => 'textfield',
-      '#title' => $this->t('Phone Number'),
+      '#title' => $this->t('Номер телефона'),
       '#default_value' => $entity->get('field_phone_number')->value,
     ];
     $form['position'] = [
       '#type' => 'textfield',
-      '#title' => $this->t('Job Title'),
+      '#title' => $this->t('Должность'),
       '#default_value' => $entity->get('field_job_title')->value,
       '#required' => TRUE,
     ];
 
     $form['actions']['submit'] = [
       '#type' => 'submit',
-      '#value' => $this->t('Save'),
+      '#value' => $this->t('Сохранить'),
     ];
 
     

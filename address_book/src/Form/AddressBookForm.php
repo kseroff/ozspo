@@ -23,22 +23,22 @@ class AddressBookForm extends FormBase {
     // Add form elements here
     $form['name'] = [
       '#type' => 'textfield',
-      '#title' => $this->t('Full Name'),
+      '#title' => $this->t('Полное имя'),
       '#required' => TRUE,
     ];
     $form['phone'] = [
       '#type' => 'textfield',
-      '#title' => $this->t('Phone Number'),
+      '#title' => $this->t('Номер телефона'),
     ];
     $form['position'] = [
       '#type' => 'textfield',
-      '#title' => $this->t('Job Title'),
+      '#title' => $this->t('Должность'),
       '#required' => TRUE,
     ];
 
     $form['actions']['submit'] = [
       '#type' => 'submit',
-      '#value' => $this->t('Save'),
+      '#value' => $this->t('Сохранить'),
     ];
 
     return $form;

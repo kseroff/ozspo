@@ -203,11 +203,82 @@ return $output;
 
   }
 
+  public function searchAjax(Request $request) {
+    $searchTerm = $request->query->get('q');
+  
+    if (empty($searchTerm)) {
+      return $this->redirect('address_book.list');
+    }
+  
+    // Получите список контактов, удовлетворяющих поисковому запросу.
+    $query = \Drupal::entityQuery('address_book')->condition('field_full_name', '%' . $searchTerm . '%', 'LIKE');
+    $query->sort('field_full_name', 'ASC');
+    $contact_ids = $query->execute();
+    $contacts = \Drupal::entityTypeManager()->getStorage('address_book')->loadMultiple($contact_ids);
+  
+    // Создание обновленной таблицы контактов.
+    $header = [
+      'id' => $this->t('ID'),
+      'field_full_name' => $this->t('Полное имя'),
+      'field_phone_number' => $this->t('Номер телефона'),
+      'field_job_title' => $this->t('Должность'),
+      'options' => $this->t('Опции'),
+    ];
+  
+    $rows = [];
+  
+    foreach ($contacts as $contact) {
+      $rows[] = [
+        'id' => $contact->id(),
+        'field_full_name' => $contact->get('field_full_name')->value,
+        'field_phone_number' => $contact->get('field_phone_number')->value,
+        'field_job_title' => $contact->get('field_job_title')->value,
+        'options' => [
+          'data' => [
+            '#type' => 'dropbutton',
+            '#links' => [
+              'edit' => [
+                'title' => $this->t('Редактировать'),
+                'url' => Url::fromRoute('address_book.edit', ['id' => $contact->id()]),
+              ],
+              'delete' => [
+                'title' => $this->t('Удалить'),
+                'url' => Url::fromRoute('address_book.delete', ['id' => $contact->id()]),
+              ],
+          ],
+          '#attributes' => [
+            'class' => ['button'],
+          ],
+        ],
+      ],
+      ];
+    }
+
+  $table = [
+    '#type' => 'table',
+    '#header' => $header,
+    '#rows' => $rows,
+    '#empty' => $this->t('No contacts found.'),
+    '#attributes' => [
+      'id' => 'address-book-table',
+    ],
+  ];
+
+  $output = [
+    'table' => render($table),
+    '#cache' => [
+      'max-age' => 0,
+    ],
+  ];
+
+  return $output;
+}
+
   public function searchFormSubmitHandler(array &$form, FormStateInterface $form_state) {
     $searchTerm = $form_state->getValue('search');
   
     // Перенаправьте на метод search с передачей поискового запроса в качестве параметра
-    $url = Url::fromRoute('address_book.search', ['q' => $searchTerm]);
+    $url = Url::fromRoute('address_book.search', [], ['query' => ['q' => $searchTerm]]);
     $form_state->setRedirectUrl($url);
   }
 

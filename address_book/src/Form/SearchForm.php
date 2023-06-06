@@ -18,35 +18,35 @@ class SearchForm extends FormBase {
   }
 
   /**
-   * {@inheritdoc}
-   */
-  public function buildForm(array $form, FormStateInterface $form_state) {
-    $form['search'] = [
-      '#type' => 'search',
-      '#title' => $this->t('Поиск'),
-      '#attributes' => [
-        'placeholder' => $this->t('Введите полное имя для поиска'),
-      ],
-    ];
+ * {@inheritdoc}
+ */
+public function buildForm(array $form, FormStateInterface $form_state) {
+  $form['#theme'] = 'address_book_search_form';
+  $form['search'] = [
+    '#type' => 'search',
+    '#title' => $this->t('Поиск'),
+    '#attributes' => [
+      'placeholder' => $this->t('Введите полное имя для поиска'),
+    ],
+  ];
 
-    $form['actions'] = [
-      '#type' => 'actions',
-    ];
+  $form['submit'] = [
+    '#type' => 'button',
+    '#value' => $this->t('Найти'),
+    '#attributes' => [
+      'class' => ['button'],
+    ],
+  ];
 
-    $form['actions']['submit'] = [
-      '#type' => 'submit',
-      '#value' => $this->t('Найти'),
-    ];
-
-    return $form;
-  }
+  return $form;
+}
 
   /**
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $searchTerm = $form_state->getValue('search');
-    $url = \Drupal\Core\Url::fromRoute('address_book.search', [], ['query' => ['q' => $searchTerm]]);
+    $url = Url::fromRoute('address_book.search_ajax')->setOption('query', ['q' => $searchTerm]);
     $form_state->setRedirectUrl($url);
   }
 

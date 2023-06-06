@@ -31,10 +31,9 @@ address_book.delete:
     _permission: 'delete address_book content'
     _access: 'TRUE'
 
-address_book.search:
+address_book.search_ajax:
   path: '/address-book/search'
   defaults:
-    _controller: '\Drupal\address_book\Controller\AddressBookController::search'
+    _controller: '\Drupal\address_book\Controller\AddressBookController::searchAjax'
   requirements:
-    _permission: 'access content'
     _access: 'TRUE'

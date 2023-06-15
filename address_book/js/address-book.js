@@ -1,7 +1,7 @@
-(function ($, Drupal, drupalSettings) {
+(function ($, Drupal) {
   Drupal.behaviors.addressBookSearch = {
     attach: function (context, settings) {
-      $('#address-book-search-form', context).once('addressBookSearch').find('button[type="submit"]').click(function (e) {
+      $('#address-book-search-form', context).once('addressBookSearch').submit(function (e) {
         e.preventDefault();
         var searchTerm = $('#address-book-search-form', context).find('input[type="search"]').val();
         var url = Drupal.url('address-book/search-ajax', { query: { q: searchTerm } });
@@ -21,4 +21,4 @@
       });
     }
   };
-})(jQuery, Drupal, drupalSettings);
+})(jQuery, Drupal);

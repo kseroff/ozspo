@@ -4,6 +4,7 @@ namespace Drupal\address_book\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Url;
 
 /**
  * Provides a search form for the address book.
@@ -46,7 +47,7 @@ public function buildForm(array $form, FormStateInterface $form_state) {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $searchTerm = $form_state->getValue('search');
-    $url = Url::fromRoute('address_book.search_ajax')->setOption('query', ['q' => $searchTerm]);
+    $url = Url::fromRoute('address_book.search_ajax')->setOption('query', ['q' => $searchTerm])->toString();
     $form_state->setRedirectUrl($url);
   }
 

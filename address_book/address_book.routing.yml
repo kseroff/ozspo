@@ -17,8 +17,9 @@ address_book.add:
 address_book.edit:
   path: '/address_book/edit/{id}'
   defaults:
-    _form: '\Drupal\address_book\Form\AddressBookFormEdit'
+    _controller: '\Drupal\address_book\Controller\AddressBookController::edit'
     _title_: 'edit contact'
+    _format: 'json'
   requirements:
     _permission: 'edit address_book content'
     _access: 'TRUE'
@@ -31,9 +32,21 @@ address_book.delete:
     _permission: 'delete address_book content'
     _access: 'TRUE'
 
+address_book.search_results:
+  path: '/address-book/search-results/{search}'
+  defaults:
+    _controller: '\Drupal\address_book\Controller\AddressBookController::searchResults'
+    _title: 'Search Results'
+  requirements:
+    _permission: 'access content'
+    _access: 'TRUE'
+
 address_book.search_ajax:
-  path: '/address-book/search'
+  path: '/address-book/search-ajax'
   defaults:
     _controller: '\Drupal\address_book\Controller\AddressBookController::searchAjax'
+    _title: 'Search AJAX'
   requirements:
+    _permission: 'access content'
+    _format: 'json'
     _access: 'TRUE'

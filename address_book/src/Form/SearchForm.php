@@ -21,18 +21,19 @@ class SearchForm extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
+
     $form['search_input'] = [
       '#type' => 'textfield',
-      '#title' => $this->t('Search'),
+      '#title' => $this->t('Поиск'),
       '#attributes' => [
         'class' => ['search-input'],
-        'placeholder' => $this->t('Enter full name to search'),
+        'placeholder' => $this->t('ведите полное имя для поиска'),
       ],
     ];
 
     $form['submit'] = [
       '#type' => 'submit',
-      '#value' => $this->t('Search'),
+      '#value' => $this->t('Найти'),
       '#ajax' => [
         'callback' => '::searchSubmit',
         'wrapper' => 'address-book-table',

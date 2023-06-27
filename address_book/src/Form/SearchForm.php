@@ -111,7 +111,7 @@ public function buildAddressBookTable($searchInput) {
       'options' => $this->t('Опции'),
     ],
     '#rows' => $rows,
-    '#empty' => $this->t('No matching contacts found.'),
+    '#empty' => $this->t('Совпадающие контакты не найдены.'),
   ];
 
   return $table;

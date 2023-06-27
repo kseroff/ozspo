@@ -67,7 +67,7 @@ class AddressBookController extends ControllerBase {
       '#type' => 'table',
       '#header' => $header,
       '#rows' => $rows,
-      '#empty' => $this->t('There are no contacts yet.'),
+      '#empty' => $this->t('Контактов пока нет.'),
     ];
 
     // Создание формы поиска

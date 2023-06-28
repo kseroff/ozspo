@@ -16,27 +16,24 @@ class AddressBookForm extends FormBase {
     return 'address_book_form';
   }
 
-  /**
-   * {@inheritdoc}
-   */
   public function buildForm(array $form, FormStateInterface $form_state) {
 
-    $entity = \Drupal::entityTypeManager()->getStorage('address_book')->create();
+    //$entity = \Drupal::entityTypeManager()->getStorage('address_book')->create();
   
     $form['name'] = [
       '#type' => 'textfield',
-      '#title' => $this->t('Full Name'),
+      '#title' => $this->t('Полное имя'),
       '#required' => TRUE,
     ];
   
     $form['phone'] = [
       '#type' => 'textfield',
-      '#title' => $this->t('Phone Number'),
+      '#title' => $this->t('Номер телефона'),
     ];
   
     $form['position'] = [
       '#type' => 'textfield',
-      '#title' => $this->t('Job Title'),
+      '#title' => $this->t('Должность'),
       '#required' => TRUE,
     ];
   
@@ -45,7 +42,7 @@ class AddressBookForm extends FormBase {
     
     $form['author'] = [
       '#type' => 'entity_autocomplete',
-      '#title' => $this->t('Author'),
+      '#title' => $this->t('Автор'),
       '#target_type' => 'user',
       '#default_value' => $author,
       '#required' => TRUE,
@@ -54,46 +51,36 @@ class AddressBookForm extends FormBase {
     
     $form['created_date'] = [
       '#type' => 'item',
-      '#title' => $this->t('Created Date'),
+      '#title' => $this->t('Дата создания'),
       '#markup' => \Drupal::service('date.formatter')->format(\Drupal::time()->getRequestTime()),
     ];
   
     $form['department'] = [
       '#type' => 'entity_autocomplete',
-      '#title' => $this->t('Department'),
+      '#title' => $this->t('Подразделение'),
       '#target_type' => 'taxonomy_term',
       //'#required' => TRUE,
     ];
   
     $form['personal'] = [
       '#type' => 'checkbox',
-      '#title' => $this->t('Personal'),
+      '#title' => $this->t('Личный'),
       '#default_value' => FALSE,
     ];
   
     $form['address'] = [
       '#type' => 'textfield',
-      '#title' => $this->t('Address'),
+      '#title' => $this->t('Адрес'),
     ];
   
     $form['actions']['submit'] = [
       '#type' => 'submit',
-      '#value' => $this->t('Save'),
+      '#value' => $this->t('Сохранить'),
     ];
   
     return $form;
   }
 
-  /**
-   * {@inheritdoc}
-   */
-  public function validateForm(array &$form, FormStateInterface $form_state) {
-
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $name = $form_state->getValue('name');
     $phone = $form_state->getValue('phone');

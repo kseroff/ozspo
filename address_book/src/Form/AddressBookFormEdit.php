@@ -24,13 +24,11 @@ class AddressBookFormEdit extends FormBase {
     $entity = AddressBook::load($id);
 
     if (!$entity) {
-
       $form['error'] = [
         '#markup' => $this->t('The specified address book entry does not exist.'),
       ];
       return $form;
     }
-
 
     $form['name'] = [
       '#type' => 'textfield',
@@ -38,11 +36,13 @@ class AddressBookFormEdit extends FormBase {
       '#default_value' => $entity->get('field_full_name')->value,
       '#required' => TRUE,
     ];
+
     $form['phone'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Phone Number'),
       '#default_value' => $entity->get('field_phone_number')->value,
     ];
+
     $form['position'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Job Title'),
@@ -62,19 +62,19 @@ class AddressBookFormEdit extends FormBase {
       '#default_value' => $entity->get('field_author')->target_id,
       '#required' => TRUE,
     ];
-    
+
     $form['created_date'] = [
       '#type' => 'item',
       '#title' => $this->t('Created date'),
       '#markup' => \Drupal::service('date.formatter')->format($entity->get('field_created_date')->value),
     ];
-    
+
     $form['modified_date'] = [
       '#type' => 'item',
       '#title' => $this->t('Modified date'),
       '#markup' => \Drupal::service('date.formatter')->format(\Drupal::time()->getRequestTime()),
     ];
-    
+
     $form['department'] = [
       '#type' => 'entity_autocomplete',
       '#title' => $this->t('Department'),
@@ -82,13 +82,13 @@ class AddressBookFormEdit extends FormBase {
       '#default_value' => $entity->get('field_department')->target_id,
       '#required' => TRUE,
     ];
-    
+
     $form['personal'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Personal'),
       '#default_value' => $entity->get('field_personal')->value,
     ];
-    
+
     $form['address'] = [
       '#type' => 'textarea',
       '#title' => $this->t('Address'),
@@ -97,18 +97,10 @@ class AddressBookFormEdit extends FormBase {
 
     $form['actions']['submit'] = [
       '#type' => 'submit',
-      '#value' => $this->t('Сохранить'),
+      '#value' => $this->t('Save'),
     ];
 
-
     return $form;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function validateForm(array &$form, FormStateInterface $form_state) {
-
   }
 
   /**
@@ -120,8 +112,7 @@ class AddressBookFormEdit extends FormBase {
     $entity = AddressBook::load($id);
 
     if (!$entity) {
-
-      $form_state->setError($form, $this->t('Указанная запись в адресной книге не существует.'));
+      $form_state->setError($form, $this->t('The specified address book entry does not exist.'));
       return;
     }
 
@@ -129,10 +120,10 @@ class AddressBookFormEdit extends FormBase {
     $entity->set('field_phone_number', $form_state->getValue('phone'));
     $entity->set('field_job_title', $form_state->getValue('position'));
     $entity->set('field_author', $form_state->getValue('author'));
-  $entity->set('field_modified_date', $form_state->getValue('modified_date'));
-  $entity->set('field_department', $form_state->getValue('department'));
-  $entity->set('field_personal', $form_state->getValue('personal'));
-  $entity->set('field_address', $form_state->getValue('address'));
+    $entity->set('field_modified_date', $form_state->getValue('modified_date'));
+    $entity->set('field_department', $form_state->getValue('department'));
+    $entity->set('field_personal', $form_state->getValue('personal'));
+    $entity->set('field_address', $form_state->getValue('address'));
     $entity->save();
 
     $form_state->setRedirectUrl(Url::fromRoute('address_book.list'));

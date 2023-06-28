@@ -23,6 +23,12 @@ class AddressBookController extends ControllerBase {
       'field_full_name' => $this->t('Полное имя'),
       'field_phone_number' => $this->t('Номер телефона'),
       'field_job_title' => $this->t('Должность'),
+      'field_author' => $this->t('Автор'),
+      'field_created_date' => $this->t('Дата создания'),
+      'field_modified_date' => $this->t('Дата изменения'),
+      'field_department' => $this->t('Отдел'),
+      'field_personal' => $this->t('Личный'),
+      'field_address' => $this->t('Адрес'),
       'options' => $this->t('Опции'),
     ];
 
@@ -35,11 +41,23 @@ class AddressBookController extends ControllerBase {
     $rows = [];
 
     foreach ($contacts as $contact) {
+      $author = $contact->get('field_author')->entity;
+      $author_name = $author ? $author->getDisplayName() : '';
+    
+      $department = $contact->get('field_department')->entity;
+      $department_name = $department ? $department->getName() : '';
+    
       $rows[] = [
         'id' => $contact->id(),
         'field_full_name' => $contact->get('field_full_name')->value,
         'field_phone_number' => $contact->get('field_phone_number')->value,
         'field_job_title' => $contact->get('field_job_title')->value,
+        'field_author' => $author_name,
+        'field_created_date' => isset($author) ? \Drupal::service('date.formatter')->format($author->getCreatedTime()) : '',
+        'field_modified_date' => isset($author) ? \Drupal::service('date.formatter')->format($author->getChangedTime()) : '',
+        'field_department' => $department_name,
+        'field_personal' => $contact->get('field_personal')->value ? $this->t('Да') : $this->t('Нет'),
+        'field_address' => $contact->get('field_address')->value,
         'options' => [
           'data' => [
             '#type' => 'dropbutton',
@@ -120,8 +138,7 @@ class AddressBookController extends ControllerBase {
   public function search(Request $request) {
     $searchTerm = $request->query->get('q');
   
-    $query = \Drupal::entityQuery('address_book')
-      ->condition('field_full_name', '%' . $searchTerm . '%', 'LIKE');
+    $query = \Drupal::entityQuery('address_book')->condition('field_full_name', '%' . $searchTerm . '%', 'LIKE');
     $contact_ids = $query->execute();
     $contacts = \Drupal::entityTypeManager()->getStorage('address_book')->loadMultiple($contact_ids);
   
@@ -133,6 +150,12 @@ class AddressBookController extends ControllerBase {
         'field_full_name' => $contact->get('field_full_name')->value,
         'field_phone_number' => $contact->get('field_phone_number')->value,
         'field_job_title' => $contact->get('field_job_title')->value,
+        'field_author' => $contact->get('field_author')->entity->getDisplayName(),
+        'field_created_date' => \Drupal::service('date.formatter')->format($contact->getCreatedTime()),
+        'field_modified_date' => \Drupal::service('date.formatter')->format($contact->getChangedTime()),
+        'field_department' => $contact->get('field_department')->entity->getName(),
+        'field_personal' => $contact->get('field_personal')->value ? $this->t('Да') : $this->t('Нет'),
+        'field_address' => $contact->get('field_address')->value,
         'options' => [
           'data' => [
             '#type' => 'dropbutton',
@@ -162,6 +185,12 @@ class AddressBookController extends ControllerBase {
         'field_full_name' => $this->t('Полное имя'),
         'field_phone_number' => $this->t('Номер телефона'),
         'field_job_title' => $this->t('Должность'),
+        'field_author' => $this->t('Автор'),
+        'field_created_date' => $this->t('Дата создания'),
+        'field_modified_date' => $this->t('Дата изменения'),
+        'field_department' => $this->t('Отдел'),
+        'field_personal' => $this->t('Личный'),
+        'field_address' => $this->t('Адрес'),
         'options' => $this->t('Опции'),
       ],
       '#rows' => $rows,
@@ -170,6 +199,5 @@ class AddressBookController extends ControllerBase {
   
     return new JsonResponse(['table' => render($table)]);
   }
-  
 
 }

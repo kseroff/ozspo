@@ -35,6 +35,7 @@ address_book.search:
   path: '/address-book/search'
   defaults:
     _controller: '\Drupal\address_book\Controller\AddressBookController::search'
+    _format: 'json'
   requirements:
     _permission: 'access content'
     _access: 'TRUE'

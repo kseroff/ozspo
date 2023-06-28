@@ -10,16 +10,10 @@ use Drupal\Core\Ajax\HtmlCommand;
 
 class SearchForm extends FormBase {
 
-  /**
-   * {@inheritdoc}
-   */
   public function getFormId() {
     return 'address_book_search_form';
   }
 
-  /**
-   * {@inheritdoc}
-   */
   public function buildForm(array $form, FormStateInterface $form_state) {
 
     $form['search_input'] = [
@@ -43,16 +37,11 @@ class SearchForm extends FormBase {
     return $form;
   }
 
-  /**
-   * {@inheritdoc}
-   */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    // This method can be left empty since we're using AJAX submission.
+   // Этот метод оставил пустым, так как мы используем отправку AJAX
   }
 
-  /**
-   * AJAX callback for search form submission.
-   */
+
   public function searchSubmit(array &$form, FormStateInterface $form_state) {
     $searchInput = $form_state->getValue('search_input');
     $table = $this->buildAddressBookTable($searchInput);
@@ -62,9 +51,7 @@ class SearchForm extends FormBase {
     return $response;
   }
 
-  /**
- * Build the address book table based on the search input.
- */
+
 public function buildAddressBookTable($searchInput) {
   $query = \Drupal::entityQuery('address_book');
   $query->condition('field_full_name', $searchInput, 'CONTAINS');
@@ -80,6 +67,12 @@ public function buildAddressBookTable($searchInput) {
       'field_full_name' => $contact->get('field_full_name')->value,
       'field_phone_number' => $contact->get('field_phone_number')->value,
       'field_job_title' => $contact->get('field_job_title')->value,
+      'field_author' => $contact->get('field_author')->entity->getDisplayName(),
+      'field_created_date' => \Drupal::service('date.formatter')->format($contact->getCreatedTime()),
+      'field_modified_date' => \Drupal::service('date.formatter')->format($contact->getChangedTime()),
+      'field_department' => $contact->get('field_department')->entity ? $contact->get('field_department')->entity->getName() : '',
+      'field_personal' => $contact->get('field_personal')->value ? $this->t('Да') : $this->t('Нет'),
+      'field_address' => $contact->get('field_address')->value,
       'options' => [
         'data' => [
           '#type' => 'dropbutton',
@@ -107,9 +100,15 @@ public function buildAddressBookTable($searchInput) {
     '#header' => [
       'id' => $this->t('ID'),
       'field_full_name' => $this->t('Полное имя'),
-      'field_phone_number' => $this->t('Номер телефона'),
-      'field_job_title' => $this->t('Должность'),
-      'options' => $this->t('Опции'),
+        'field_phone_number' => $this->t('Номер телефона'),
+        'field_job_title' => $this->t('Должность'),
+        'field_author' => $this->t('Автор'),
+        'field_created_date' => $this->t('Дата создания'),
+        'field_modified_date' => $this->t('Дата изменения'),
+        'field_department' => $this->t('Отдел'),
+        'field_personal' => $this->t('Личный'),
+        'field_address' => $this->t('Адрес'),
+        'options' => $this->t('Опции'),
     ],
     '#rows' => $rows,
     '#empty' => $this->t('Совпадающие контакты не найдены.'),

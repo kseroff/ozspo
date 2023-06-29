@@ -25,7 +25,7 @@ class AddressBookController extends ControllerBase {
       'field_author' => $this->t('Автор'),
       'field_created_date' => $this->t('Дата создания'),
       'field_modified_date' => $this->t('Дата изменения'),
-      'field_department' => $this->t('Отдел'),
+      'field_department' => $this->t('Подразделение'),
       'field_personal' => $this->t('Личный'),
       'field_address' => $this->t('Адрес'),
       'options' => $this->t('Опции'),
@@ -105,9 +105,8 @@ class AddressBookController extends ControllerBase {
   public function delete($id) {
     $storage = \Drupal::entityTypeManager()->getStorage('address_book');
     $contact = $storage->load($id);
-    if ($contact) {
-      $contact->delete();
-    }
+    if ($contact) { $contact->delete(); }
+
     return $this->redirect('address_book.list');
   }
 

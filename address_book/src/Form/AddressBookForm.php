@@ -41,7 +41,7 @@ class AddressBookForm extends FormBase {
       '#type' => 'entity_autocomplete',
       '#title' => $this->t('Подразделение'),
       '#target_type' => 'taxonomy_term',
-      //'#required' => TRUE,
+      '#required' => TRUE,
     ];
   
     $form['address'] = [

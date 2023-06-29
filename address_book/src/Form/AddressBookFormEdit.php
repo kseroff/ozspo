@@ -48,11 +48,15 @@ class AddressBookFormEdit extends FormBase {
       '#required' => TRUE,
     ];
     
+    $department_id = $entity->get('field_department')->target_id;
+    $department_term = \Drupal\taxonomy\Entity\Term::load($department_id);
+    $department_default_value = !empty($department_term) ? $department_term : NULL;
+    
     $form['department'] = [
       '#type' => 'entity_autocomplete',
       '#title' => $this->t('Подраздиление'),
       '#target_type' => 'taxonomy_term',
-      '#default_value' => $entity->get('field_department')->target_id,
+      '#default_value' => $department_default_value,
     ];
     
     $form['address'] = [
@@ -69,7 +73,7 @@ class AddressBookFormEdit extends FormBase {
 
     $form['actions']['submit'] = [
       '#type' => 'submit',
-      '#value' => $this->t('Save'),
+      '#value' => $this->t('Сохранить'),
     ];
 
 
@@ -87,17 +91,16 @@ class AddressBookFormEdit extends FormBase {
     $entity = AddressBook::load($id);
 
     if (!$entity) {
-
-      $form_state->setError($form, $this->t('The specified address book entry does not exist.'));
+      $form_state->setError($form, $this->t('Указанная запись в адресной книге не существует.'));
       return;
     }
 
     $entity->set('field_full_name', $form_state->getValue('name'));
-$entity->set('field_phone_number', $form_state->getValue('phone'));
-$entity->set('field_job_title', $form_state->getValue('position'));
-$entity->set('field_department', $form_state->getValue('department'));
-$entity->set('field_address', $form_state->getValue('address'));
-$entity->set('field_personal', $form_state->getValue('personal'));
+    $entity->set('field_phone_number', $form_state->getValue('phone'));
+    $entity->set('field_job_title', $form_state->getValue('position'));
+    $entity->set('field_department', $form_state->getValue('department'));
+    $entity->set('field_address', $form_state->getValue('address'));
+    $entity->set('field_personal', $form_state->getValue('personal'));
     $entity->save();
 
     $form_state->setRedirectUrl(Url::fromRoute('address_book.list'));

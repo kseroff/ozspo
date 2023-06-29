@@ -51,7 +51,6 @@ class SearchForm extends FormBase {
     return $response;
   }
 
-
 public function buildAddressBookTable($searchInput) {
   $query = \Drupal::entityQuery('address_book');
   $query->condition('field_full_name', $searchInput, 'CONTAINS');
@@ -105,7 +104,7 @@ public function buildAddressBookTable($searchInput) {
         'field_author' => $this->t('Автор'),
         'field_created_date' => $this->t('Дата создания'),
         'field_modified_date' => $this->t('Дата изменения'),
-        'field_department' => $this->t('Отдел'),
+        'field_department' => $this->t('Подразделение'),
         'field_personal' => $this->t('Личный'),
         'field_address' => $this->t('Адрес'),
         'options' => $this->t('Опции'),

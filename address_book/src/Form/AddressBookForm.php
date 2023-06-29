@@ -92,7 +92,7 @@ class AddressBookForm extends FormBase {
       'field_department' => $department,
       'field_address' => $address,
       'field_personal' => $personal,
-      'field_author' => $author,ы
+      'field_author' => $author,
     ]);
   
     $entity->save();

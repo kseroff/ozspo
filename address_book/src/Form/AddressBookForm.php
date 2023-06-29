@@ -37,6 +37,24 @@ class AddressBookForm extends FormBase {
       '#required' => TRUE,
     ];
   
+    $form['department'] = [
+      '#type' => 'entity_autocomplete',
+      '#title' => $this->t('Подразделение'),
+      '#target_type' => 'taxonomy_term',
+      //'#required' => TRUE,
+    ];
+  
+    $form['address'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Адрес'),
+    ];
+
+    $form['personal'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Личный'),
+      '#default_value' => FALSE,
+    ];
+
     $authorId = \Drupal::currentUser()->id();
     $author = \Drupal\user\Entity\User::load($authorId);
     
@@ -47,30 +65,6 @@ class AddressBookForm extends FormBase {
       '#default_value' => $author,
       '#required' => TRUE,
       '#disabled' => TRUE,
-    ];
-    
-    $form['created_date'] = [
-      '#type' => 'item',
-      '#title' => $this->t('Дата создания'),
-      '#markup' => \Drupal::service('date.formatter')->format(\Drupal::time()->getRequestTime()),
-    ];
-  
-    $form['department'] = [
-      '#type' => 'entity_autocomplete',
-      '#title' => $this->t('Подразделение'),
-      '#target_type' => 'taxonomy_term',
-      //'#required' => TRUE,
-    ];
-  
-    $form['personal'] = [
-      '#type' => 'checkbox',
-      '#title' => $this->t('Личный'),
-      '#default_value' => FALSE,
-    ];
-  
-    $form['address'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Адрес'),
     ];
   
     $form['actions']['submit'] = [
@@ -85,20 +79,20 @@ class AddressBookForm extends FormBase {
     $name = $form_state->getValue('name');
     $phone = $form_state->getValue('phone');
     $position = $form_state->getValue('position');
+    $department = $form_state->getValue('department');
+    $address = $form_state->getValue('address');
+    $personal = $form_state->getValue('personal');
     $authorId = $form_state->getValue('author');
     $author = \Drupal\user\Entity\User::load($authorId);
-    $department = $form_state->getValue('department');
-    $personal = $form_state->getValue('personal');
-    $address = $form_state->getValue('address');
   
     $entity = AddressBook::create([
       'field_full_name' => $name,
       'field_phone_number' => $phone,
       'field_job_title' => $position,
-      'field_author' => $author,
       'field_department' => $department,
-      'field_personal' => $personal,
       'field_address' => $address,
+      'field_personal' => $personal,
+      'field_author' => $author,ы
     ]);
   
     $entity->save();

@@ -116,8 +116,6 @@ class AddressBookController extends ControllerBase {
     return $form;
   }
 
-  public function search(Request $request) {
-
-  }
+  public function search(Request $request) {}
 
 }

@@ -1,0 +1,7 @@
+custom_notes.add_note:
+  path: '/custom_notes/add'
+  defaults:
+    _controller: '\Drupal\custom_notes\Controller\CustomNotesController::addNoteForm'
+    _title: 'Add Note Form'
+  requirements:
+    _permission: 'access content'

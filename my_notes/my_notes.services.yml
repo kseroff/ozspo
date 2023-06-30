@@ -1,6 +1,0 @@
-services:
-  my_notes.list_builder:
-    class: Drupal\my_notes\NoteListBuilder
-    arguments: ['@entity_type.manager']
-    tags:
-      - { name: entity.list_builder, entity_type: note }

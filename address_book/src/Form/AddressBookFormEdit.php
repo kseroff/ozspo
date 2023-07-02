@@ -59,6 +59,13 @@ class AddressBookFormEdit extends FormBase {
       '#required' => TRUE,
     ];
 
+    $form['address'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Адрес'),
+      '#default_value' => $entity->get('field_address')->value,
+      '#required' => TRUE,
+    ];
+
     $form['personal'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Личный'),
@@ -92,6 +99,7 @@ class AddressBookFormEdit extends FormBase {
     $entity->set('field_job_title', $form_state->getValue('position'));
     $entity->set('field_department', $form_state->getValue('department'));
     $entity->set('field_personal', $form_state->getValue('personal'));
+    $entity->set('field_address', $form_state->getValue('address'));
     $entity->save();
 
     $form_state->setRedirectUrl(Url::fromRoute('address_book.list'));

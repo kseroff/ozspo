@@ -73,6 +73,7 @@ class AddressBookForm extends FormBase {
     $phone = $form_state->getValue('phone');
     $position = $form_state->getValue('position');
     $department = $form_state->getValue('department');
+    $address = $form_state->getValue('address');
     $personal = $form_state->getValue('personal');
     $authorId = $form_state->getValue('author');
     $author = \Drupal\user\Entity\User::load($authorId);
@@ -82,6 +83,7 @@ class AddressBookForm extends FormBase {
       'field_phone_number' => $phone,
       'field_job_title' => $position,
       'field_department' => $department,
+      'field_address' => $address,
       'field_personal' => $personal,
       'field_author' => $author,
     ]);

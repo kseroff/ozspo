@@ -7,6 +7,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\HtmlCommand;
+use Drupal\taxonomy\Entity\Term;
 
 class SearchForm extends FormBase {
 
@@ -39,83 +40,90 @@ class SearchForm extends FormBase {
   }
 
   public function submitForm(array &$form, FormStateInterface $form_state) {
-   // Этот метод оставил пустым, так как мы используем отправку AJAX
+    // Этот метод оставил пустым, так как мы используем отправку AJAX
   }
 
+  public function searchSubmit(array &$form, FormStateInterface $form_state) {
+    $searchInput = $form_state->getValue('search_input');
+    $table = $this->buildAddressBookTable($searchInput);
 
-public function searchSubmit(array &$form, FormStateInterface $form_state) {
-  $searchInput = $form_state->getValue('search_input');
-  $table = $this->buildAddressBookTable($searchInput);
+    $response = new AjaxResponse();
+    $response->addCommand(new HtmlCommand('#address-book-table', render($table)));
+    return $response;
+  }
 
-  $response = new AjaxResponse();
-  $response->addCommand(new HtmlCommand('#address-book-table', render($table)));
-  return $response;
-}
+  public function buildAddressBookTable($searchInput) {
+    $query = \Drupal::entityQuery('address_book');
+    $group = $query->orConditionGroup();
+    $group->condition('field_full_name', $searchInput, 'CONTAINS');
+    $group->condition('field_phone_number', $searchInput, 'CONTAINS');
+    $group->condition('field_job_title', $searchInput, 'CONTAINS');
+    $group->condition('field_department', $searchInput, 'CONTAINS');
+    //$group->condition('field_address', $searchInput, 'CONTAINS');
+    $query->condition($group);
+    $query->sort('field_full_name', 'ASC');
+    $contact_ids = $query->execute();
+    $contacts = \Drupal::entityTypeManager()->getStorage('address_book')->loadMultiple($contact_ids);
 
+    $rows = [];
 
-public function buildAddressBookTable($searchInput) {
-  $query = \Drupal::entityQuery('address_book');
-  $group = $query->orConditionGroup();
-  $group->condition('field_full_name', $searchInput, 'CONTAINS');
-  $group->condition('field_phone_number', $searchInput, 'CONTAINS');
-  $group->condition('field_job_title', $searchInput, 'CONTAINS');
-  $group->condition('field_department', $searchInput, 'CONTAINS');
-  //$group->condition('field_address', $searchInput, 'CONTAINS');
-  $query->condition($group);
-  $query->sort('field_full_name', 'ASC');
-  $contact_ids = $query->execute();
-  $contacts = \Drupal::entityTypeManager()->getStorage('address_book')->loadMultiple($contact_ids);
+    foreach ($contacts as $contact) {
+      $department_term = Term::load($contact->get('field_department')->target_id);
+      $department_name = $department_term ? $department_term->getName() : '';
 
-  $rows = [];
-
-  foreach ($contacts as $contact) {
-    $rows[] = [
-      'id' => $contact->id(),
-      'field_full_name' => $contact->get('field_full_name')->value,
-      'field_phone_number' => $contact->get('field_phone_number')->value,
-      'field_job_title' => $contact->get('field_job_title')->value,
-      'field_department' => $contact->get('field_department')->entity ? $contact->get('field_department')->entity->getName() : '',
-      'field_personal' => $contact->get('field_personal')->value ? $this->t('Да') : $this->t('Нет'),
-      'field_address' => $contact->get('field_address')->value,
-      'options' => [
-        'data' => [
-          '#type' => 'dropbutton',
-          '#links' => [
-            'edit' => [
-              'title' => $this->t('Редактировать'),
-              'url' => Url::fromRoute('address_book.edit', ['id' => $contact->id()]),
-            ],
-            'delete' => [
-              'title' => $this->t('Удалить'),
-              'url' => Url::fromRoute('address_book.delete', ['id' => $contact->id()]),
-            ],
-          ],
-          '#attributes' => ['class' => ['options']],
-          '#attached' => [
-            'library' => ['core/drupal.dropbutton'],
+      $rows[] = [
+        'id' => $contact->id(),
+        'field_full_name' => $contact->get('field_full_name')->value,
+        'field_phone_number' => $contact->get('field_phone_number')->value,
+        'field_job_title' => $contact->get('field_job_title')->value,
+        'field_department' => [
+          'data' => [
+            '#type' => 'link',
+            '#title' => $department_name,
+            '#url' => Url::fromRoute('entity.taxonomy_term.canonical', ['taxonomy_term' => $contact->get('field_department')->target_id]),
           ],
         ],
-      ],
-    ];
-  }
+        'field_personal' => $contact->get('field_personal')->value ? $this->t('Да') : $this->t('Нет'),
+        'field_address' => $contact->get('field_address')->value,
+        'options' => [
+          'data' => [
+            '#type' => 'dropbutton',
+            '#links' => [
+              'edit' => [
+                'title' => $this->t('Редактировать'),
+                'url' => Url::fromRoute('address_book.edit', ['id' => $contact->id()]),
+              ],
+              'delete' => [
+                'title' => $this->t('Удалить'),
+                'url' => Url::fromRoute('address_book.delete', ['id' => $contact->id()]),
+              ],
+            ],
+            '#attributes' => ['class' => ['options']],
+            '#attached' => [
+              'library' => ['core/drupal.dropbutton'],
+            ],
+          ],
+        ],
+      ];
+    }
 
-  $table = [
-    '#type' => 'table',
-    '#header' => [
-      'id' => $this->t('ID'),
-      'field_full_name' => $this->t('Полное имя'),
+    $table = [
+      '#type' => 'table',
+      '#header' => [
+        'id' => $this->t('ID'),
+        'field_full_name' => $this->t('Полное имя'),
         'field_phone_number' => $this->t('Номер телефона'),
         'field_job_title' => $this->t('Должность'),
         'field_department' => $this->t('Отдел'),
         'field_personal' => $this->t('Личный'),
         'field_address' => $this->t('Адрес'),
         'options' => $this->t('Опции'),
-    ],
-    '#rows' => $rows,
-    '#empty' => $this->t('Совпадающие контакты не найдены.'),
-  ];
+      ],
+      '#rows' => $rows,
+      '#empty' => $this->t('Совпадающие контакты не найдены.'),
+    ];
 
-  return $table;
-}
+    return $table;
+  }
 
 }

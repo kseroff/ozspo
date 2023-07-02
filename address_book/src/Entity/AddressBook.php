@@ -115,7 +115,7 @@ class AddressBook extends ContentEntityBase implements ContentEntityInterface {
         'weight' => -1,
       ]);
 
-    $fields['field_department'] = BaseFieldDefinition::create('entity_reference')
+      $fields['field_department'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Department'))
       ->setDescription(t('The department of the contact.'))
       ->setSetting('target_type', 'taxonomy_term')
@@ -123,9 +123,17 @@ class AddressBook extends ContentEntityBase implements ContentEntityInterface {
       ->setTranslatable(FALSE)
       ->setRevisionable(FALSE)
       ->setDisplayOptions('form', [
-        'type' => 'entity_reference_autocomplete',
+        'type' => 'entity_autocomplete',
         'weight' => 0,
-      ]);
+        'settings' => [
+          'match_operator' => 'CONTAINS',
+          'size' => '60',
+          'autocomplete_type' => 'tags',
+          'placeholder' => '',
+        ],
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
     $fields['field_personal'] = BaseFieldDefinition::create('boolean')
       ->setLabel(t('Personal'))

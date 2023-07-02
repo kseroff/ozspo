@@ -46,7 +46,13 @@ class AddressBookController extends ControllerBase {
         'field_full_name' => $contact->get('field_full_name')->value,
         'field_phone_number' => $contact->get('field_phone_number')->value,
         'field_job_title' => $contact->get('field_job_title')->value,
-        'field_department' => $department_name,
+        'field_department' => [
+          'data' => [
+            '#type' => 'link',
+            '#title' => $department_name,
+            '#url' => Url::fromRoute('entity.taxonomy_term.canonical', ['taxonomy_term' => $department->id()]),
+          ],
+        ],
         'field_personal' => $contact->get('field_personal')->value ? $this->t('Да') : $this->t('Нет'),
         'field_address' => $contact->get('field_address')->value,
         'options' => [

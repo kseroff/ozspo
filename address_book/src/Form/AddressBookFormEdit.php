@@ -6,6 +6,7 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Drupal\address_book\Entity\AddressBook;
+use Drupal\taxonomy\Entity\Term;
 
 class AddressBookFormEdit extends FormBase {
 
@@ -17,11 +18,9 @@ class AddressBookFormEdit extends FormBase {
   }
 
   public function buildForm(array $form, FormStateInterface $form_state, $id = NULL) {
-
     $entity = AddressBook::load($id);
 
     if (!$entity) {
-
       $form['error'] = [
         '#markup' => $this->t('Указанная запись в адресной книге не существует.'),
       ];
@@ -34,27 +33,27 @@ class AddressBookFormEdit extends FormBase {
       '#default_value' => $entity->get('field_full_name')->value,
       '#required' => TRUE,
     ];
-    
+
     $form['phone'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Номер телефона'),
       '#default_value' => $entity->get('field_phone_number')->value,
     ];
-    
+
     $form['position'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Должность'),
       '#default_value' => $entity->get('field_job_title')->value,
       '#required' => TRUE,
     ];
-    
+
     $department_id = $entity->get('field_department')->target_id;
-    $department_term = \Drupal\taxonomy\Entity\Term::load($department_id);
+    $department_term = Term::load($department_id);
     $department_default_value = !empty($department_term) ? $department_term : NULL;
-    
+
     $form['department'] = [
       '#type' => 'entity_autocomplete',
-      '#title' => $this->t('Подраздиление'),
+      '#title' => $this->t('Подразделение'),
       '#target_type' => 'taxonomy_term',
       '#default_value' => $department_default_value,
       '#required' => TRUE,
@@ -71,7 +70,6 @@ class AddressBookFormEdit extends FormBase {
       '#value' => $this->t('Сохранить'),
     ];
 
-
     $form['id'] = [
       '#type' => 'hidden',
       '#value' => $id,
@@ -81,7 +79,6 @@ class AddressBookFormEdit extends FormBase {
   }
 
   public function submitForm(array &$form, FormStateInterface $form_state) {
-
     $id = $form_state->getValue('id');
     $entity = AddressBook::load($id);
 
@@ -94,7 +91,6 @@ class AddressBookFormEdit extends FormBase {
     $entity->set('field_phone_number', $form_state->getValue('phone'));
     $entity->set('field_job_title', $form_state->getValue('position'));
     $entity->set('field_department', $form_state->getValue('department'));
-    $entity->set('field_address', $form_state->getValue('address'));
     $entity->set('field_personal', $form_state->getValue('personal'));
     $entity->save();
 

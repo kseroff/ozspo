@@ -42,6 +42,8 @@ class AddressBookForm extends FormBase {
       '#title' => $this->t('Подразделение'),
       '#target_type' => 'taxonomy_term',
       '#required' => TRUE,
+      '#tags' => TRUE,
+      '#default_value' => '',
     ];
   
     $form['address'] = [

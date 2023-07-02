@@ -57,12 +57,7 @@ class AddressBookFormEdit extends FormBase {
       '#title' => $this->t('Подраздиление'),
       '#target_type' => 'taxonomy_term',
       '#default_value' => $department_default_value,
-    ];
-    
-    $form['address'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Адрес'),
-      '#default_value' => $entity->get('field_address')->value,
+      '#required' => TRUE,
     ];
 
     $form['personal'] = [

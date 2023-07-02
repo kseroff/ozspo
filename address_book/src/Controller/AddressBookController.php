@@ -22,9 +22,6 @@ class AddressBookController extends ControllerBase {
       'field_full_name' => $this->t('Полное имя'),
       'field_phone_number' => $this->t('Номер телефона'),
       'field_job_title' => $this->t('Должность'),
-      'field_author' => $this->t('Автор'),
-      'field_created_date' => $this->t('Дата создания'),
-      'field_modified_date' => $this->t('Дата изменения'),
       'field_department' => $this->t('Подразделение'),
       'field_personal' => $this->t('Личный'),
       'field_address' => $this->t('Адрес'),
@@ -40,8 +37,6 @@ class AddressBookController extends ControllerBase {
     $rows = [];
 
     foreach ($contacts as $contact) {
-      $author = $contact->get('field_author')->entity;
-      $author_name = $author ? $author->getDisplayName() : '';
     
       $department = $contact->get('field_department')->entity;
       $department_name = $department ? $department->getName() : '';
@@ -51,9 +46,6 @@ class AddressBookController extends ControllerBase {
         'field_full_name' => $contact->get('field_full_name')->value,
         'field_phone_number' => $contact->get('field_phone_number')->value,
         'field_job_title' => $contact->get('field_job_title')->value,
-        'field_author' => $author_name,
-        'field_created_date' => \Drupal::service('date.formatter')->format($contact->getCreatedTime()),
-        'field_modified_date' => \Drupal::service('date.formatter')->format($contact->getChangedTime()),
         'field_department' => $department_name,
         'field_personal' => $contact->get('field_personal')->value ? $this->t('Да') : $this->t('Нет'),
         'field_address' => $contact->get('field_address')->value,
@@ -115,6 +107,10 @@ class AddressBookController extends ControllerBase {
     return $form;
   }
 
-  public function search(Request $request) {}
+  public function search(Request $request) {
+    $searchInput = $request->query->get('q');
+    $form = \Drupal::formBuilder()->getForm('\Drupal\address_book\Form\SearchForm', $searchInput);
+    return $form;
+  }
 
 }

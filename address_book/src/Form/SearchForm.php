@@ -58,7 +58,7 @@ class SearchForm extends FormBase {
     $group->condition('field_full_name', $searchInput, 'CONTAINS');
     $group->condition('field_phone_number', $searchInput, 'CONTAINS');
     $group->condition('field_job_title', $searchInput, 'CONTAINS');
-    $group->condition('field_department', $searchInput, 'CONTAINS');
+    $group->condition('field_department.target_id', $searchInput, 'CONTAINS');
     //$group->condition('field_address', $searchInput, 'CONTAINS');
     $query->condition($group);
     $query->sort('field_full_name', 'ASC');
@@ -114,7 +114,7 @@ class SearchForm extends FormBase {
         'field_full_name' => $this->t('Полное имя'),
         'field_phone_number' => $this->t('Номер телефона'),
         'field_job_title' => $this->t('Должность'),
-        'field_department' => $this->t('Отдел'),
+        'field_department' => $this->t('Подразделение'),
         'field_personal' => $this->t('Личный'),
         'field_address' => $this->t('Адрес'),
         'options' => $this->t('Опции'),

@@ -163,12 +163,6 @@ class AddressBook extends ContentEntityBase implements ContentEntityInterface {
     return \Drupal::currentUser()->id();
   }
   
-  /**
-   * Gets the created timestamp of the address book entry.
-   *
-   * @return int
-   *   The created timestamp of the address book entry.
-   */
   public function getCreatedTime() {
     return $this->get('created')->value;
   }

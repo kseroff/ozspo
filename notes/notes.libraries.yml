@@ -1,8 +1,0 @@
-notes/notes:
-  version: 1.x
-  js:
-    js/notes.js: {}
-  dependencies:
-    - core/jquery
-    - core/drupal.ajax
-    - core/drupal

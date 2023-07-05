@@ -1,7 +1,0 @@
-notes.page:
-  path: '/notes'
-  defaults:
-    _controller: '\Drupal\notes\Controller\NotesController::notesPage'
-    _title: 'Заметки'
-  requirements:
-    _permission: 'access content'

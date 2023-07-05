@@ -1,9 +1,0 @@
-name: 'Custom Notes'
-type: module
-description: 'Module for managing notes.'
-package: Custom
-core: 8.x
-dependencies:
-  - drupal:core
-  - drupal:ajax
-  - drupal:node

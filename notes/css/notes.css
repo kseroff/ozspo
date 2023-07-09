@@ -1,0 +1,48 @@
+.notes-form{
+  position: relative;
+}
+.buttonadd{
+  position: absolute;
+  left: 80%;
+  width: 30px;
+  height: 30px;
+  border-radius: 20%;
+  background-color: white;
+  border: 1px solid lightgrey;
+  color: black;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  text-align: center;
+  top: -2.5em;
+  }
+.input{
+  border-radius: 7px;
+  width:600px;
+  border: 1px solid lightgrey;
+  }
+.buttonadd:hover {
+  box-shadow: 0 0 2px #cbd6ee;
+}
+.butdelete{
+  width: 20px;
+  background-color: transparent;
+  color: black;
+  font-size: 12px;
+  border: none;
+  cursor: pointer;
+}
+.allbut{
+  display: flex;
+}
+.butsave{
+  width: 20px;
+  background-color: transparent;
+  color: black;
+  font-size: 15px;
+  border: none;
+  cursor: pointer;
+  background-image: url("../images/save.png");
+  background-repeat: no-repeat;
+  margin: .5em 0 0 .5em;
+}

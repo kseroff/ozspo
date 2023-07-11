@@ -1,0 +1,46 @@
+.notes-form{
+  position: relative;
+}
+.buttonadd{
+  position: absolute;
+  left: 34em;
+  width: 30px;
+  height: 30px;
+  border-radius: 20%;
+  background-color: white;
+  border: 1px solid lightgrey;
+  color: black;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  text-align: center;
+  top: -2.5em;
+  }
+.input{
+  border-radius: 7px;
+  width:600px;
+  border: 1px solid lightgrey;
+  }
+.buttonadd:hover {
+  box-shadow: 0 0 2px #cbd6ee;
+}
+.butdelete{
+  width: 20px;
+  background-color: transparent;
+  color: black;
+  font-size: 12px;
+  border: none;
+  cursor: pointer;
+}
+.allbut{
+  display: flex;
+}
+
+.number {
+  margin-right: 8px;
+  width: 8px;
+  font-size: larger;
+  text-align: center;
+  font: initial;
+  padding-top: 5px;
+}

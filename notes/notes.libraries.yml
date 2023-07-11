@@ -1,9 +1,0 @@
-notes:
-  css:
-    theme:
-      css/notes.css: {}
-  js:
-    js/notes.js: {}
-  dependencies:
-    - core/jquery
-    - core/jquery.once

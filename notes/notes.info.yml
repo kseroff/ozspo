@@ -1,9 +1,0 @@
-name: 'Заметки'
-type: module
-description: 'Модуль для создания заметок'
-core: 8.x
-package: Custom
-dependencies:
-  - node
-  - user
-  - views

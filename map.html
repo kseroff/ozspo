@@ -15,6 +15,11 @@
         border-radius: 5px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
       }
+      .popup-image {
+        max-width: 200px;
+        max-height: 200px;
+        margin-bottom: 10px;
+      }
     </style>
     <script src="https://openlayers.org/en/v6.5.0/build/ol.js"></script>
   </head>
@@ -34,7 +39,7 @@
             source: new ol.source.Vector({
               features: [
                 new ol.Feature({
-                  geometry: new ol.geom.Point(ol.proj.fromLonLat([45.0174, 53.1959])) // Координаты
+                  geometry: new ol.geom.Point(ol.proj.fromLonLat([45.0174, 53.1959])) // Координаты центра города Пензы
                 })
               ]
             }),
@@ -48,8 +53,8 @@
           })
         ],
         view: new ol.View({
-          center: ol.proj.fromLonLat([45.0174, 53.1959]), // Координаты 
-          zoom: 12 // Уровень масштабирования
+          center: ol.proj.fromLonLat([45.0174, 53.1959]), // Координаты центра города Пензы
+          zoom: 12 // Уровень масштабирования для отображения города Пензы
         })
       });
 
@@ -67,7 +72,8 @@
           popup.style.display = 'block';
           popup.style.left = event.pixel[0] + 'px';
           popup.style.top = event.pixel[1] - popup.offsetHeight + 'px';
-          popupContent.innerHTML = 'Центр города<br>';
+          popupContent.innerHTML = '<img id="popup-image" class="popup-image" src="center.png"><br>' +
+            'Центр города<br>';
         } else {
           popup.style.display = 'none';
         }

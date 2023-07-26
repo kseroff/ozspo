@@ -6,6 +6,7 @@ use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\geofield\GeoFieldItemInterface;
 use Drupal\user\Entity\User;
 
 /**
@@ -155,6 +156,29 @@ class AddressBook extends ContentEntityBase implements ContentEntityInterface {
         'type' => 'text_textarea',
         'weight' => 2,
       ]);
+
+    $fields['field_location'] = BaseFieldDefinition::create('geofield')
+  ->setLabel(t('Location'))
+  ->setDescription(t('The location of the contact.'))
+  ->setTranslatable(FALSE)
+  ->setRevisionable(FALSE)
+  ->setDisplayOptions('form', [
+    'type' => 'geofield_widget',
+    'weight' => 3,
+  ])
+  ->setDisplayOptions('view', [
+    'type' => 'geofield_map',
+    'weight' => 4,
+  ])
+  ->setSettings([
+    'backend_config' => [
+      'data_type' => 'geography',
+      'required' => TRUE,
+    ],
+  ])
+  ->setDisplayConfigurable('form', TRUE)
+  ->setDisplayConfigurable('view', TRUE)
+  ->setCardinality(1);
 
     return $fields;
   }

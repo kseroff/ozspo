@@ -6,11 +6,14 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Drupal\address_book\Entity\AddressBook;
-use Drupal\geofield\WktGeneratorInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Asset\LibraryDependencyResolverInterface;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\ReplaceCommand;
+use Drupal\Core\Asset\AssetCollectionRendererInterface;
+use Drupal\Core\Asset\AttachedAssetsInterface;
+use Drupal\Core\Asset\LibraryDiscoveryInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Asset\AssetResolverInterface;
 
 class AddressBookForm extends FormBase {
 
@@ -21,10 +24,46 @@ class AddressBookForm extends FormBase {
     return 'address_book_form';
   }
 
+  protected $assetCollectionRenderer;
+  protected $assetResolver; // Correct the variable name.
+
+  /**
+   * Constructs a new AddressBookForm.
+   *
+   * @param \Drupal\Core\Asset\LibraryDiscoveryInterface $library_discovery
+   *   The library discovery service.
+   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
+   *   The module handler.
+   * @param \Drupal\Core\Asset\AssetCollectionRendererInterface $asset_collection_renderer
+   *   The asset collection renderer service.
+   * @param \Drupal\Core\Asset\AssetResolverInterface $asset_resolver
+   *   The asset resolver service.
+   */
+  public function __construct(LibraryDiscoveryInterface $library_discovery, ModuleHandlerInterface $module_handler, AssetCollectionRendererInterface $asset_collection_renderer, AssetResolverInterface $asset_resolver) {
+    $this->libraryDiscovery = $library_discovery;
+    $this->moduleHandler = $module_handler;
+    $this->assetCollectionRenderer = $asset_collection_renderer;
+    $this->assetResolver = $asset_resolver; // Correct the variable assignment.
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('library.discovery'),
+      $container->get('module_handler'),
+      $container->get('asset.css.collection_renderer'),
+      $container->get('asset.resolver') // Use the correct service name.
+    );
+  }
+
   public function buildForm(array $form, FormStateInterface $form_state) {
 
     //$entity = \Drupal::entityTypeManager()->getStorage('address_book')->create();
   
+    $form['#attached']['library'][] = 'address_book/leaflet';
+
     $form['name'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Полное имя'),
@@ -71,7 +110,6 @@ class AddressBookForm extends FormBase {
     $form['map'] = [
       '#type' => 'markup',
       '#markup' => '<div id="address-book-map" style="height: 400px;"></div>',
-      '#attributes' => ['class' => ['leaflet-map']],
     ];
 
     $form['address_wrapper'] = [
@@ -86,8 +124,6 @@ class AddressBookForm extends FormBase {
       '#suffix' => '</div>',
       '#attributes' => ['readonly' => 'readonly'],
     ];
-
-    $form['#attached']['library'][] = 'address_book/address_book';
 
     $form['personal'] = [
       '#type' => 'checkbox',

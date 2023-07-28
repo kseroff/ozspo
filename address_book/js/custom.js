@@ -11,6 +11,18 @@
           locationField.val(e.latlng.lat + ',' + e.latlng.lng);
           Drupal.ajax({ url: '/address-book/update-address-field', submit: { triggering_element: locationField[0] } });
         });
+
+        var locationField = $('input[name="location[latlon]"]');
+        var locationValue = locationField.val();
+        if (locationValue) {
+          var locationArray = locationValue.split(',');
+          var lat = parseFloat(locationArray[0]);
+          var lon = parseFloat(locationArray[1]);
+          if (!isNaN(lat) && !isNaN(lon)) {
+            map.setView([lat, lon], 10);
+            L.marker([lat, lon]).addTo(map);
+          }
+        }
       }
 
       // Search input

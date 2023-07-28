@@ -4,5 +4,7 @@ description: Provides an address book functionality.
 core: 8.x
 dependencies:
   - core/jquery
+  - drupal:geofield
+  - drupal:views
 libraries:
   - address_book/custom

@@ -1,9 +1,0 @@
-resources:
-  css:
-    theme:
-      css/resources.css: {}
-  js:
-    js/resources.js: {}
-  dependencies:
-    - core/jquery
-    - core/jquery.once

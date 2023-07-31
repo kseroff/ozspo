@@ -1,9 +1,0 @@
-name: 'Ресурсы'
-type: module
-description: 'Модуль для создания ссылок на ресурс'
-core: 8.x
-package: Custom
-dependencies:
-  - node
-  - user
-  - views

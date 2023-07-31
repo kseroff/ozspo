@@ -1,7 +1,0 @@
-your_module.resource_list:
-  path: '/resources'
-  defaults:
-    _controller: '\Drupal\resources\Controller\ResourcesController::resourcesPage'
-    _title: 'Resource List'
-  requirements:
-    _permission: 'access content'

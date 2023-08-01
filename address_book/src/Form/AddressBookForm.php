@@ -89,41 +89,30 @@ class AddressBookForm extends FormBase {
       '#tags' => TRUE,
       '#default_value' => '',
     ];
-  
-    $form['address'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Адрес'),
-    ];
 
-    $form['location'] = [
-      '#type' => 'geofield_latlon',
-      '#title' => $this->t('Карта'),
-      '#default_value' => ['lat' => 0, 'lon' => 0],
-      '#description' => $this->t('Нажмите на карту для выбора точки'),
-      '#ajax' => [
-        'callback' => '::updateAddressField',
-        'event' => 'geofield_widget_map_changed',
-        'wrapper' => 'address-wrapper',
-      ],
-    ];
-
-    $form['map'] = [
-      '#type' => 'markup',
-      '#markup' => '<div id="address-book-map" style="height: 400px;"></div>',
-    ];
-
-    $form['address_wrapper'] = [
-      '#type' => 'container',
-      '#attributes' => ['id' => 'address-wrapper'],
-    ];
-
-    $form['address_wrapper']['address'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Адрес'),
-      '#prefix' => '<div id="address">',
-      '#suffix' => '</div>',
-      '#attributes' => ['readonly' => 'readonly'],
-    ];
+      $form['location'] = [
+        '#type' => 'geofield_latlon',
+        '#title' => $this->t('Карта'),
+        '#default_value' => ['lat' => 0, 'lon' => 0],
+        '#description' => $this->t('Нажмите на карту для выбора точки'),
+        '#ajax' => [
+          'callback' => '::updateAddressField',
+          'event' => 'geofield_widget_map_changed',
+          'wrapper' => 'address-wrapper',
+        ],
+      ];
+      
+      $form['map'] = [
+        '#type' => 'markup',
+        '#markup' => '<div id="address-book-map" style="height: 400px;"></div>',
+        '#prefix' => '<div id="address-wrapper">',
+        '#suffix' => '</div>',
+      ];
+      
+      $form['address_wrapper'] = [
+        '#type' => 'container',
+        '#attributes' => ['id' => 'address-wrapper'],
+      ];
 
     $form['personal'] = [
       '#type' => 'checkbox',
@@ -144,15 +133,17 @@ class AddressBookForm extends FormBase {
 
   public function updateAddressField(array &$form, FormStateInterface $form_state) {
     $response = new AjaxResponse();
-
     $location = $form_state->getValue('location');
-
+  
     $address = $location['lat'] . ', ' . $location['lon'];
-    $response->addCommand(new ReplaceCommand('#address', '<div id="address">' . $address . '</div>'));
-
+    $form['address_wrapper']['address']['#value'] = $address;
+  
+    $response->addCommand(new ReplaceCommand('#address', $this->renderer->renderRoot($form['address_wrapper']['address'])));
+    $response->addCommand(new InvokeCommand('#address', 'val', [$address]));
+  
     return $response;
   }
-
+  
 
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $name = $form_state->getValue('name');

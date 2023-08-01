@@ -147,38 +147,52 @@ class AddressBook extends ContentEntityBase implements ContentEntityInterface {
         'weight' => 1,
       ]);
 
-    $fields['field_address'] = BaseFieldDefinition::create('text_long')
+      $fields['field_address'] = BaseFieldDefinition::create('geofield')
       ->setLabel(t('Address'))
       ->setDescription(t('The address of the contact.'))
       ->setTranslatable(FALSE)
       ->setRevisionable(FALSE)
       ->setDisplayOptions('form', [
-        'type' => 'text_textarea',
+        'type' => 'geofield_widget',
         'weight' => 2,
-      ]);
+      ])
+      ->setDisplayOptions('view', [
+        'type' => 'geofield_map',
+        'weight' => 3,
+      ])
+      ->setSettings([
+        'backend_config' => [
+          'data_type' => 'geography',
+          'required' => TRUE,
+        ],
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE)
+      ->setCardinality(1);
 
-    $fields['field_location'] = BaseFieldDefinition::create('geofield')
-  ->setLabel(t('Location'))
-  ->setDescription(t('The location of the contact.'))
-  ->setTranslatable(FALSE)
-  ->setRevisionable(FALSE)
-  ->setDisplayOptions('form', [
-    'type' => 'geofield_widget',
-    'weight' => 3,
-  ])
-  ->setDisplayOptions('view', [
-    'type' => 'geofield_map',
-    'weight' => 4,
-  ])
-  ->setSettings([
-    'backend_config' => [
-      'data_type' => 'geography',
-      'required' => TRUE,
-    ],
-  ])
-  ->setDisplayConfigurable('form', TRUE)
-  ->setDisplayConfigurable('view', TRUE)
-  ->setCardinality(1);
+      $fields['field_location'] = BaseFieldDefinition::create('geofield')
+      ->setLabel(t('Location'))
+      ->setDescription(t('The location of the contact.'))
+      ->setTranslatable(FALSE)
+      ->setRevisionable(FALSE)
+      ->setDisplayOptions('form', [
+        'type' => 'geofield_widget',
+        'weight' => 2,
+      ])
+      ->setDisplayOptions('view', [
+        'type' => 'geofield_map',
+        'weight' => 3,
+      ])
+      ->setSettings([
+        'backend_config' => [
+          'data_type' => 'geography',
+          'required' => TRUE,
+        ],
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE)
+      ->setCardinality(1);
+    
 
     return $fields;
   }

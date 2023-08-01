@@ -1,20 +1,15 @@
 #address-book-map {
-  margin-bottom: 20px;
-}
-
-#address {
-  margin-bottom: 10px;
-}
-
-.leaflet-map {
   width: 100%;
   height: 400px;
 }
 
-.search-input {
-  width: 300px;
-  padding: 5px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  margin-bottom: 10px;
+#address-wrapper {
+  margin-top: 10px;
+}
+
+#address {
+  display: block;
+  margin-top: 5px;
+  font-style: italic;
+  color: #666;
 }

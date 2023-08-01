@@ -11,3 +11,5 @@ custom:
     - core/drupal
     - core/drupal.ajax
     - core/drupal.ajax.form
+    - core/drupalSettings
+    - leaflet/leaflet

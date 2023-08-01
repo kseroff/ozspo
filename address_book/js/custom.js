@@ -1,7 +1,7 @@
 (function ($, Drupal) {
   Drupal.behaviors.addressBookIntegration = {
     attach: function (context, settings) {
-      // Leaflet map integration
+      // Leaflet
       if (typeof L !== 'undefined') {
         var map = L.map('address-book-map').setView([0, 0], 10);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
@@ -25,7 +25,7 @@
         }
       }
 
-      // Search input
+      // Search 
       $('.search-input', context).once('address-book-search').each(function () {
         var searchInput = $(this);
 

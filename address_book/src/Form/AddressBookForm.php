@@ -62,7 +62,7 @@ class AddressBookForm extends FormBase {
 
     //$entity = \Drupal::entityTypeManager()->getStorage('address_book')->create();
   
-    $form['#attached']['library'][] = 'address_book/leaflet';
+    $form['#attached']['library'][] = 'leaflet/leaflet';
 
     $form['name'] = [
       '#type' => 'textfield',

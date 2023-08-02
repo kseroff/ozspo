@@ -28,7 +28,6 @@ use Drupal\Core\StringTranslation\TranslatableMarkup;
  *     "storage" = "Drupal\Core\Entity\Sql\SqlContentEntityStorage",
  *   },
  *   revision_table = "note_revision",
- *   field_ui_base_route = "entity.note.edit_form",
  * )
  */
 class Note extends ContentEntityBase {

@@ -1,0 +1,20 @@
+<?php
+
+use Drupal\Core\Asset\LibraryDiscoveryInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+
+function mapmodule_preprocess_page(&$variables) {
+  $libraryDiscovery = \Drupal::service('library.discovery');
+  $routeMatch = \Drupal::service('current_route_match');
+
+  //загрузка библиотеки
+  $libraryDiscovery->getLibraryByName('mapmodule', 'openlayers');
+  
+  if ($routeMatch instanceof RouteMatchInterface && $routeMatch->getRouteName() === 'mapmodule.view_points') {
+    // необходимо для страницы viewpoints
+    $variables['#attached']['library'][] = 'mapmodule/view-points';
+  }
+
+  // Add other JavaScript files as needed.
+}

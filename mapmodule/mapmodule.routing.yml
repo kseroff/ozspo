@@ -1,0 +1,25 @@
+mapmodule.view_points:
+  path: '/map/view-points'
+  defaults:
+    _title: 'View Points'
+    _controller: '\Drupal\mapmodule\Controller\MapViewPointsController::viewPoints'
+  requirements:
+    _permission: 'access content'
+
+mapmodule.ajax_view_point:
+  path: '/map/ajax/view-point/{point_id}'
+  defaults:
+    _title: 'AJAX View Point'
+    _controller: '\Drupal\mapmodule\Controller\MapViewPointsController::ajaxViewPoint'
+  requirements:
+    _permission: 'access content'
+
+mapmodule.layer_block:
+  path: '/map/layer-block'
+  defaults:
+    _title: 'Layer Block'
+    _controller: '\Drupal\mapmodule\Controller\MapViewPointsController::layerBlock'
+  requirements:
+    _permission: 'access content'
+  options:
+    _admin_route: TRUE

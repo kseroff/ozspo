@@ -2,18 +2,16 @@ resources.resource:
   type: config_entity
   label: 'Resource'
   mapping:
-    id:
-      type: string
-      label: 'ID'
-    title:
-      type: label
-      label: 'Title'
-    url:
-      type: string
-      label: 'URL'
-    personal:
-      type: boolean
-      label: 'Personal'
+    shared:
+      id:
+        type: string
+        label: 'ID'
+      title:
+        type: label
+        label: 'Title'
+      url:
+        type: string
+        label: 'URL'
   constraints:
     id:
       - ConfigEntityIdUnique: []

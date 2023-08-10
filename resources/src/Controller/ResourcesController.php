@@ -3,6 +3,12 @@
 namespace Drupal\resources\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\resources\Entity\Resources;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Drupal\Core\Url;
+use Drupal\Core\Ajax\AjaxResponse;
+use Drupal\Core\Ajax\HtmlCommand;
 
 /**
  * Контроллер для списка ресурсов.
@@ -19,23 +25,26 @@ class ResourcesController extends ControllerBase {
   /**
    * Отображает список ресурсов.
    */
-  public function resourceList() {
-    $config = \Drupal::config('resources');
-
-    // Получаем значения из конфигурации для общих ресурсов.
-    $shared_title = $config->get('shared.title');
-    $shared_url = $config->get('shared.url');
-
-    // Формируем список ссылок, используя данные общего ресурса.
-    $shared_link = '<a href="' . $shared_url . '">' . $shared_title . '</a>';
-
-    // Формируем окончательный список ссылок.
-    $links = $shared_link;
-
-    // Возвращаем массив с данными для отображения ссылок.
-    return [
-      '#markup' => $links,
-    ];
+  public function getResource() {
+    $config = \Drupal::configFactory()->getEditable('resources.site');
+    $resourcedata = $config->get('resource.data');
+    $out = json_encode($resourcedata);
+    return new Response($out);
+  }
+  /**
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *
+   * @return \Symfony\Component\HttpFoundation\Response
+   * @throws \Drupal\Core\Entity\EntityStorageException
+   */
+  public function saveResource(Request $request) {
+    $data = $request->request->all();
+    $config = \Drupal::configFactory()->getEditable('resources.site');
+    $config->get('resource');
+    $config->set('resource',$data)->save();
+    $arr['response'] = TRUE;
+    $out = json_encode($arr);
+    return new Response($out);
   }
 
 }

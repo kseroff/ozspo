@@ -1,7 +1,21 @@
-your_module.resource_list:
+resource_list:
   path: '/resources'
   defaults:
     _controller: '\Drupal\resources\Controller\ResourcesController::resourcesPage'
     _title: 'Resource List'
   requirements:
     _permission: 'access content'
+
+resources.get:
+  path: '/get_resources_data'
+  defaults:
+    _controller: '\Drupal\resources\Controller\ResourcesController::getResource'
+  requirements:
+    _access: 'TRUE'
+
+resources:
+  path: '/save_resources_data'
+  defaults:
+    _controller: '\Drupal\resources\Controller\ResourcesController::saveResource'
+  requirements:
+    _access: 'TRUE'

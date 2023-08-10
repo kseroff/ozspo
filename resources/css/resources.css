@@ -11,11 +11,15 @@
   background-color: white;
   border: 1px solid lightgrey;
   color: black;
+  background-image: url("../images/add.png");
+  background-repeat: no-repeat;
   font-size: 18px;
   font-weight: bold;
   cursor: pointer;
   text-align: center;
   top: -2.5em;
+  background-size: 14px 14px;
+  background-position: center;
 }
 
 .input {
@@ -38,9 +42,24 @@
   width: 20px;
   background-color: transparent;
   color: black;
-  font-size: 12px;
+  border: none;
+  background-image: url("../images/delete.png");
+  background-repeat: no-repeat;
+  cursor: pointer;
+  margin: .6em 0 0 .5em;
+  background-size: 14px 14px;
+}
+
+.butsave {
+  width: 20px;
+  background-color: transparent;
+  color: black;
+  background-image: url("../images/save.png");
+  background-repeat: no-repeat;
   border: none;
   cursor: pointer;
+  margin: .5em 0 0 .5em;
+  background-size: 14px 14px;
 }
 
 .resource-row {

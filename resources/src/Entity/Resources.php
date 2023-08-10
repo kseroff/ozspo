@@ -30,6 +30,10 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  * )
  */
 class Resources extends ConfigEntityBase {
-  // Здесь реализуется сущность конфигурации.
+
+
+  public function getTitle() {
+    return $this->get('title')->value;
+  }
 
 }

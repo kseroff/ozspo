@@ -12,7 +12,6 @@
 
         // Добавление кнопки для динамического добавления новых ресурсов
         var addButton = document.createElement("div");
-        addButton.innerHTML = "+";
         addButton.classList.add("buttonadd");
         resourcesForm.appendChild(addButton);
 
@@ -23,17 +22,8 @@
           // Обработчик события для кнопки добавления
           const allInputs = resourcesForm.querySelectorAll(".resource-row .input");
           const lastIndex = allInputs.length > 0 ? parseInt(allInputs[allInputs.length - 1].parentNode.querySelector('.number').textContent) : 0;
-          const newRow = getResourceRow("", "", false, lastIndex); // Создание новой строки с пустыми полями ввода
+          const newRow = getResourceRow("", lastIndex); // Создание новой строки с пустыми полями ввода
           resourcesForm.appendChild(newRow);
-          newRow.querySelector('.input-title').focus(); // Установка фокуса на новое поле ввода
-        });
-
-        resourcesForm.addEventListener("keydown", function (event) {
-          // Обработчик события "keydown" для всей формы
-          if (event.target.classList.contains("input")) {
-            clearTimeout(savetimer);
-            savetimer = setTimeout(sendData, 1000);
-          }
         });
 
         resourcesForm.addEventListener("click", function (event) {
@@ -65,18 +55,26 @@
         var inputUrl = document.createElement("input");
         inputUrl.type = "text";
         inputUrl.placeholder = "URL";
-        //inputUrl.value = url;
         inputUrl.classList.add("input-url");
         row.appendChild(inputUrl);
 
         var butdelete = document.createElement("button");
-        butdelete.innerHTML = "✕";
         butdelete.classList.add("butdelete");
         row.appendChild(butdelete);
 
+        var butsave = document.createElement("button");
+        butsave.classList.add("butsave");
+        row.appendChild(butsave);
+
+        butsave.addEventListener("click", function () {
+          //row.removeChild(inputUrl);
+          row.removeChild(butsave);
+
+          });
+
         butdelete.addEventListener("click", function () {
           // Обработчик события "click" для кнопки удаления
-          resourcesForm.querySelector('.resources-container').removeChild(row);
+          resourcesForm.removeChild(row);
           const rows = resourcesForm.querySelectorAll('.resource-row');
           for (var i = 0; i < rows.length; i++) {
             const currentRow = rows[i];
@@ -87,9 +85,50 @@
           }
         });
 
+        butdelete.addEventListener("click", function () {
+          // Обработчик клика по кнопке удаления
+          clearTimeout(savetimer);
+          savetimer = setTimeout(sendData, 500);
+        });
+        butsave.addEventListener("click", function () {
+          // Обработчик клика по кнопке удаления
+          clearTimeout(savetimer);
+          savetimer = setTimeout(sendData, 200);
+        });
         return row;
       }
+      function getUrl(){
 
+        var link = document.createElement("div");
+        link.classList.add("resource-link");
+        var a = document.createElement('a');
+        link.appendChild(a);
+        var number = document.createElement("span");
+        number.classList.add("number");
+        number.textContent = index + 1;
+        link.appendChild(number);
+        var butdelete = document.createElement("button");
+        butdelete.classList.add("butdelete");
+        link.appendChild(butdelete);
+        butdelete.addEventListener("click", function () {
+          // Обработчик события "click" для кнопки удаления
+          resourcesForm.removeChild(row);
+          const rows = resourcesForm.querySelectorAll('.resource-row');
+          for (var i = 0; i < rows.length; i++) {
+            const currentRow = rows[i];
+            const num = currentRow.querySelector('.number');
+            if (num) {
+              num.textContent = i + 1;
+            }
+          }
+        });
+
+        butdelete.addEventListener("click", function () {
+          // Обработчик клика по кнопке удаления
+          clearTimeout(savetimer);
+          savetimer = setTimeout(sendData, 500);
+        });
+      }
       function sendData() {
         // Функция для отправки данных на сервер
         const data = getData(); // Получение данных из полей ввода
@@ -118,17 +157,20 @@
       function getData() {
         // Функция для получения данных из полей ввода
         const rows = resourcesForm.querySelectorAll(".resource-row");
-
+        var protocolSite = document.location.protocol;
+        var hostSite = document.location.host;
+        var portSite = document.location.port;
         var data = [];
         if (rows.length > 0) {
           for (let i = 0; i < rows.length; i++) {
             const row = rows[i];
-            const title = row.querySelector(".input-title").value;
-            const url = row.querySelector(".input-url").value;
-            const personal = row.querySelector(".input-personal").checked;
-
+            const title = row.querySelector(".input").value;
+            var url = new URL(row.querySelector(".input-url").value);
+            if(url.protocol == protocolSite && url.host==hostSite && url.port==portSite){
+              url = url.pathname;
+            }
             if (title !== "" && url !== "") {
-              data.push({title: title, url: url, personal: personal});
+              data.push({title: title, url: url});
             }
           }
         }
@@ -142,16 +184,12 @@
           dataType: "json",
           type: 'GET',
           success: function (msg) {
-            if (msg.length === 0) {
-              const newRow = getResourceRow("", "", false, 0);
-              resourcesForm.querySelector('.resources-container').appendChild(newRow);
-            } else {
+
               for (var i = 0; i < msg.length; i++) {
                 var resource = msg[i];
-                const newRow = getResourceRow(resource.title, resource.url, resource.personal, i);
-                resourcesForm.querySelector('.resources-container').appendChild(newRow);
+                //const newRow = getResourceRow(resource.title, resource.url, i);
+                resourcesForm.appendChild(getUrl(resource.title, resource.url, i));
               }
-            }
           },
           error: function () {
             console.log('updateContent error'); // Обработка ошибки при получении данных

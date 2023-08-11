@@ -1,0 +1,6 @@
+openlayers_gis.map:
+  path: '/openlayers-gis/map'
+  defaults:
+    _controller: '\Drupal\openlayers_gis\Controller\OpenLayersGisController::mapPage'
+  requirements:
+    _permission: 'access content'

@@ -1,0 +1,40 @@
+<?php
+
+function openlayers_gis_menu() {
+  $items = [];
+
+  $items['openlayers-gis-map'] = [
+    'title' => 'OpenLayers GIS Map',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => ['openlayers_gis_map_form'],
+    'access arguments' => ['access content'],
+    'type' => MENU_NORMAL_ITEM,
+  ];
+
+  return $items;
+}
+
+function openlayers_gis_map_form($form, &$form_state) {
+  // Add CSS and JS for the OpenLayers GIS module.
+  drupal_add_library('openlayers_gis', 'openlayers_gis');
+  drupal_add_library('openlayers_gis', 'ol');
+
+  $form['map'] = [
+    '#markup' => '<div id="openlayers-gis-map" class="map"></div>',
+    '#attached' => [
+      'library' => ['openlayers_gis/openlayers_gis', 'openlayers_gis/ol'],
+    ],
+  ];
+
+  return $form;
+}
+
+function openlayers_gis_theme($existing, $type, $theme, $path) {
+  return [
+    'openlayers_gis_map' => [
+      'variables' => [],
+      'template' => 'openlayers-gis-map',
+      'path' => $path . '/templates',
+    ],
+  ];
+}

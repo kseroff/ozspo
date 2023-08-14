@@ -1,8 +1,9 @@
 openlayers_gis:
   version: 1.x
   js:
-    js/openlayers_gis.js: {}
     js/ol.js: {}
+    js/ol.js.map: {}
+    js/openlayers_gis.js: {}
   css:
     component:
       css/openlayers_gis.css: {}
@@ -11,4 +12,3 @@ openlayers_gis:
     - core/drupalSettings
     - core/underscore
     - core/jquery.once
-    - openlayers/openlayers.library

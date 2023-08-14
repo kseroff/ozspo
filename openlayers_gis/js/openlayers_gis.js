@@ -17,26 +17,6 @@
         }),
       });
 
-      // Fetch points from Drupal and add them to the vector layer.
-      $.ajax({
-        url: '/openlayers-gis/points',
-        success: function (data) {
-          var vectorLayer = new openlayers.layer.Vector({
-            source: new openlayers.source.Vector(),
-          });
-
-          map.addLayer(vectorLayer);
-
-          data.forEach(function (point) {
-            var feature = new openlayers.Feature({
-              geometry: new openlayers.geom.Point(openlayers.proj.fromLonLat([point.longitude, point.latitude])),
-            });
-            feature.set('info', point.info);
-            vectorLayer.getSource().addFeature(feature);
-          });
-        },
-      });
-
       var popup = new openlayers.Overlay({
         element: document.getElementById('openlayers-gis-popup'),
       });

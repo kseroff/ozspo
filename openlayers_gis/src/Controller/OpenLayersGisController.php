@@ -13,7 +13,7 @@ class OpenLayersGisController extends ControllerBase {
     return [
       '#markup' => $output,
       '#attached' => [
-        'library' => ['openlayers_gis/openlayers_gis'],
+        'library' => ['openlayers_gis/ol', 'openlayers_gis/openlayers_gis'],
       ],
     ];
   }

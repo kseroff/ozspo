@@ -1,23 +1,40 @@
-(function ($, Drupal, openlayers) {
-
-  'use strict';
+(function ($, Drupal) {
 
   Drupal.behaviors.openlayersGis = {
-    attach: function (context, settings) {
-      var map = new openlayers.Map({
+    proc: function(){
+var map = new ol.Map({
         target: 'openlayers-gis-map',
         layers: [
-          new openlayers.layer.Tile({
-            source: new openlayers.source.OSM(),
+          new ol.layer.Tile({
+            source: new ol.source.OSM(),
           }),
         ],
-        view: new openlayers.View({
-          center: openlayers.proj.fromLonLat([45.0174, 53.1959]),
+        view: new ol.View({
+          center: ol.proj.fromLonLat([45.0174, 53.1959]),
           zoom: 12,
         }),
       });
 
-      var popup = new openlayers.Overlay({
+      $.ajax({
+        url: '/openlayers-gis/points',
+        success: function (data) {
+          var vectorLayer = new ol.layer.Vector({
+            source: new ol.source.Vector(),
+          });
+
+          map.addLayer(vectorLayer);
+
+          data.forEach(function (point) {
+            var feature = new ol.Feature({
+              geometry: new ol.geom.Point(ol.proj.fromLonLat([point.longitude, point.latitude])),
+            });
+            feature.set('info', point.info);
+            vectorLayer.getSource().addFeature(feature);
+          });
+        },
+      });
+
+      var popup = new ol.Overlay({
         element: document.getElementById('openlayers-gis-popup'),
       });
       map.addOverlay(popup);
@@ -38,6 +55,10 @@
         }
       });
     },
+
+    attach: function (context, settings) {
+       $(context).find('main').once().each(Drupal.behaviors.openlayersGis.proc);
+    },
   };
 
-})(jQuery, Drupal, openlayers);
+})(jQuery, Drupal);

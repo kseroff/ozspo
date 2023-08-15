@@ -4,3 +4,11 @@ openlayers_gis.map:
     _controller: '\Drupal\openlayers_gis\Controller\OpenLayersGisController::mapPage'
   requirements:
     _permission: 'access content'
+
+openlayers_gis.getpoint:
+  path: '/openlayers-gis/getpoint'
+  defaults:
+    _controller: '\Drupal\openlayers_gis\Controller\OpenLayersGisController::getPointsData'
+  requirements:
+    _permission: 'access content'
+

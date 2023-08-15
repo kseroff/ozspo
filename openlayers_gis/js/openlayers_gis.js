@@ -2,7 +2,7 @@
 
   Drupal.behaviors.openlayersGis = {
     proc: function(){
-var map = new ol.Map({
+      var map = new ol.Map({
         target: 'openlayers-gis-map',
         layers: [
           new ol.layer.Tile({
@@ -15,29 +15,37 @@ var map = new ol.Map({
         }),
       });
 
-      $.ajax({
-        url: '/openlayers-gis/points',
-        success: function (data) {
-          var vectorLayer = new ol.layer.Vector({
-            source: new ol.source.Vector(),
-          });
-
-          map.addLayer(vectorLayer);
-
-          data.forEach(function (point) {
-            var feature = new ol.Feature({
-              geometry: new ol.geom.Point(ol.proj.fromLonLat([point.longitude, point.latitude])),
-            });
-            feature.set('info', point.info);
-            vectorLayer.getSource().addFeature(feature);
-          });
-        },
-      });
-
       var popup = new ol.Overlay({
         element: document.getElementById('openlayers-gis-popup'),
       });
       map.addOverlay(popup);
+
+      $.ajax({
+        url: '/openlayers-gis/getpoint',
+        method: 'GET',
+        success: function (data) {
+          var points = data;
+          points.forEach(function (point) {
+            var marker = new ol.Feature({
+              geometry: new ol.geom.Point(ol.proj.fromLonLat([point.longitude, point.latitude])),
+              info: point.info,
+            });
+            marker.setStyle(new ol.style.Style({
+              image: new ol.style.Circle({
+                radius: 6,
+                fill: new ol.style.Fill({color: 'red'}),
+              }),
+            }));
+            var vectorSource = new ol.source.Vector({
+              features: [marker],
+            });
+            var vectorLayer = new ol.layer.Vector({
+              source: vectorSource,
+            });
+            map.addLayer(vectorLayer);
+          });
+        },
+      });
 
       map.on('click', function (event) {
         var feature = map.forEachFeatureAtPixel(event.pixel, function (feature) {
@@ -57,7 +65,7 @@ var map = new ol.Map({
     },
 
     attach: function (context, settings) {
-       $(context).find('main').once().each(Drupal.behaviors.openlayersGis.proc);
+      $(context).find('main').once().each(Drupal.behaviors.openlayersGis.proc);
     },
   };
 

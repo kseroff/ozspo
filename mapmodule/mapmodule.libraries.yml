@@ -1,7 +1,0 @@
-openlayers:
-  version: 4.6.5
-  css:
-    theme:
-      //example.com/path/to/openlayers/ol.css: {}
-  js:
-    //example.com/path/to/openlayers/ol.js: {}

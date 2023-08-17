@@ -8,10 +8,15 @@
       var self = this;
 
       // Выполняем процедуру proc для каждого элемента main
-      $(context).find('main').once().each(function () { self.proc.call(self, this); });
+      $(context).find('main').once().each(function () 
+      { 
+        self.proc.call(self, this); 
+      });
 
-      // Обновляем точки на карте
-      self.updatePoints.call(self);
+      self.map.on('moveend', function () 
+      {
+        self.updatePoints(self);
+      });
 
       // Добавляем обработчик события click на карту
       self.click.call(self);

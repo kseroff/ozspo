@@ -1,28 +1,22 @@
 (function ($, Drupal) {
 
-  // Создание объекта openlayersGis внутри behaviors
+  var loadedPointIds = {};
+
   Drupal.behaviors.openlayersGis = {
-    map: null, // Хранение объекта карты
+    map: null,
 
     attach: function (context, settings) {
       var self = this;
+      $(context).find('main').once().each(function () { self.proc.call(self, this); });
 
-      // Выполняем процедуру proc для каждого элемента main
-      $(context).find('main').once().each(function () 
-      { 
-        self.proc.call(self, this); 
-      });
-
-      self.map.on('moveend', function () 
+      self.map.on('moveend', function ()
       {
-        self.updatePoints(self);
+      self.updatePoints();
       });
 
-      // Добавляем обработчик события click на карту
-      self.click.call(self);
+      self.click();
     },
 
-    // Процедура инициализации карты
     proc: function (element) {
       this.map = new ol.Map({
         target: 'openlayers-gis-map',
@@ -37,52 +31,90 @@
         }),
       });
 
-      // Создание всплывающего окна на карте
-  this.popup = new ol.Overlay({
-    element: document.getElementById('openlayers-gis-popup'),
-  });
-  this.map.addOverlay(this.popup);
+      // Добавляем ol-ext библиотеку для кластеризации
+      ol.source.Vector.prototype.clustering = function() {
+        return new ol.source.Cluster({
+          source: this
+        });
+      };
+
+      var vectorSource = new ol.source.Vector().clustering();
+    
+          // Создаем слой для кластеров
+          var clusterLayer = new ol.layer.Vector({
+            source: vectorSource,
+            style: function(feature) {
+          var size = feature.get('features') ? feature.get('features').length : 1;
+          var style = new ol.style.Style({
+            image: new ol.style.Circle({
+              radius: 10,
+              fill: new ol.style.Fill({
+                color: 'red',
+              }),
+            }),
+            text: new ol.style.Text({
+              text: size.toString(),
+              fill: new ol.style.Fill({
+                color: '#fff',
+              }),
+            }),
+          });
+          return style;
+        },
+      });
+
+      this.map.addLayer(clusterLayer);
+      this.popup = new ol.Overlay({
+        element: document.getElementById('openlayers-gis-popup'),
+      });
+      this.map.addOverlay(this.popup);
     },
 
-    // Обновление точек на карте
     updatePoints: function () {
       var self = this;
-      if (self.map) { // Проверяем, что карта уже инициализирована
+      if (self.map) {
         var bounds = self.map.getView().calculateExtent();
+        var bbox = bounds.join(',');
 
-        // Запрос данных о точках с сервера
         $.ajax({
           url: '/openlayers-gis/getpoint',
           method: 'GET',
-          data: { 'bbox': bounds.join(','), },
+          data: { 'bbox': bbox },
           success: function (data) {
             var points = data;
-            var vectorSource = new ol.source.Vector();
 
-            // Создание маркеров для каждой точки
+            // Очищаем источник кластеров от точек, которые больше не видны
+            self.map.getLayers().forEach(function (layer) {
+              if (layer instanceof ol.layer.Vector) {
+                var features = layer.getSource().getSource().getFeatures();
+                features.forEach(function (feature) {
+                  var featureId = feature.getProperties().id;
+                  if (!loadedPointIds[featureId]) {
+                    layer.getSource().getSource().removeFeature(feature);
+                  }
+                });
+              }
+            });
+
+            // Заполняем источник кластеров новыми точками
             points.forEach(function (point) {
-              var marker = new ol.Feature({
-                geometry: new ol.geom.Point(ol.proj.fromLonLat([point.longitude, point.latitude])),
-                info: point.info,
-              });
+              var featureId = point.id;
+              if (!loadedPointIds[featureId]) {
+                loadedPointIds[featureId] = true;
 
-              // Определение стиля маркера
-              marker.setStyle(new ol.style.Style({
-                image: new ol.style.Circle({
-                  radius: 6,
-                  fill: new ol.style.Fill({color: 'red'}),
-                }),
-              }));
+                var feature = new ol.Feature({
+                  geometry: new ol.geom.Point(ol.proj.fromLonLat([point.longitude, point.latitude])),
+                  info: point.info,
+                  id: featureId, // Добавляем ID точки в свойства
+                });
 
-              vectorSource.addFeature(marker);
+                self.map.getLayers().forEach(function (layer) {
+                  if (layer instanceof ol.layer.Vector) {
+                    layer.getSource().getSource().addFeature(feature);
+                  }
+                });
+              }
             });
-
-            // Создание слоя с точками и добавление на карту
-            var vectorLayer = new ol.layer.Vector({
-              source: vectorSource,
-            });
-
-            self.map.addLayer(vectorLayer);
           },
         });
       }
@@ -98,12 +130,12 @@
           });
     
           if (feature) {
-        //console.log("точка нажимается");
             var coordinates = feature.getGeometry().getCoordinates();
             self.popup.setPosition(coordinates); 
             var content = '<div class="popup-content">' + feature.get('info') + '</div>';
             $('#openlayers-gis-popup').html(content);
-          } else {
+          } 
+          else {
             self.popup.setPosition(undefined);
             $('#openlayers-gis-popup').empty();
           }

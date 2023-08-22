@@ -3,6 +3,7 @@ openlayers_gis:
   js:
     js/openlayers_gis.js: {}
     js/ol.js: {}
+    js/ol-ext.js: {}
   css:
     component:
       css/openlayers_gis.css: {}

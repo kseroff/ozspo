@@ -16,7 +16,11 @@ class OpenLayersGisController extends ControllerBase {
     return [
       '#markup' => $output,
       '#attached' => [
-        'library' => ['openlayers_gis/ol', 'openlayers_gis/openlayers_gis'],
+        'library' => [
+          'openlayers_gis/ol',
+          'openlayers_gis/ol-ext',
+          'openlayers_gis/openlayers_gis',
+        ],
         'drupalSettings' => [
           'openlayers_gis' => [
             'points' => $this->getPointsData($request), 
@@ -32,6 +36,8 @@ class OpenLayersGisController extends ControllerBase {
     $data = [];
 
     $points = \Drupal::entityTypeManager()->getStorage('point_entity')->loadMultiple();
+    
+    
     foreach ($points as $point) {
       $data[] = [
         'id' => $point->id(),
@@ -40,7 +46,21 @@ class OpenLayersGisController extends ControllerBase {
         'info' => $point->get('info')->value,
       ];
     }
-    
+
+/*
+    $data = [];
+    for ($i = 1; $i <= 10000; $i++) {
+      $latitude = rand(50, 54) + rand(0, 99999) / 100000;
+      $longitude = rand(41, 46) + rand(0, 99999) / 100000;
+      $data[] = [
+        'id' => $i,
+        'latitude' => $latitude,
+        'longitude' => $longitude,
+        'info' => 'Test Point ' . $i,
+      ];
+    }
+  */
+
     return new JsonResponse($data);
   }
 

@@ -13,8 +13,10 @@
       {
       self.updatePoints();
       });
-
-      self.click();
+      
+      $(document).ready(function () {
+        Drupal.behaviors.customOpenlayersBlock.loadBlock();
+      });
     },
 
     proc: function (element) {
@@ -28,10 +30,11 @@
         view: new ol.View({
           center: ol.proj.fromLonLat([45.0174, 53.1959]),
           zoom: 12,
+          minZoom: 4,
         }),
       });
 
-      // Добавляем ol-ext библиотеку для кластеризации
+      // Добавляем ol-ext
       ol.source.Vector.prototype.clustering = function() {
         return new ol.source.Cluster({
           source: this
@@ -96,7 +99,7 @@
               }
             });
 
-            // Заполняем источник кластеров новыми точками
+            // Загружаем только те точки, которые еще не были загружены
             points.forEach(function (point) {
               var featureId = point.id;
               if (!loadedPointIds[featureId]) {
@@ -131,13 +134,16 @@
     
           if (feature) {
             var coordinates = feature.getGeometry().getCoordinates();
-            self.popup.setPosition(coordinates); 
-            var content = '<div class="popup-content">' + feature.get('info') + '</div>';
-            $('#openlayers-gis-popup').html(content);
+            self.popup.setPosition(coordinates);
+    
+            var pointInfo = feature.get('info');
+            Drupal.behaviors.customOpenlayersBlock.showPointInfo({ info: pointInfo });
+    
+            Drupal.behaviors.customOpenlayersBlock.showBlock();
           } 
           else {
             self.popup.setPosition(undefined);
-            $('#openlayers-gis-popup').empty();
+            Drupal.behaviors.customOpenlayersBlock.hideBlock();
           }
         });
       }

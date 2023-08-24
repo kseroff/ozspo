@@ -32,11 +32,9 @@ class OpenLayersGisController extends ControllerBase {
 
   public function getPointsData(Request $request) {
     $bbox = $request->query->get('bbox');
-
     $data = [];
 
-    $points = \Drupal::entityTypeManager()->getStorage('point_entity')->loadMultiple();
-    
+    $points = \Drupal::entityTypeManager()->getStorage('point_entity')->loadMultiple();  
     
     foreach ($points as $point) {
       $data[] = [

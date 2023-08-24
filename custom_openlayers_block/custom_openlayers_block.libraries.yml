@@ -1,0 +1,13 @@
+custom_openlayers_block:
+  version: 1.x
+  js:
+    js/custom_openlayers_block.js: {}
+  css:
+    theme:
+      css/custom_openlayers_block.css: {}
+  dependencies:
+    - core/drupal
+    - core/jquery
+    - core/jquery.once
+    - core/drupalSettings
+    - openlayers_gis/openlayers_gis

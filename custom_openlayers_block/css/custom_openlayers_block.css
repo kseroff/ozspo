@@ -1,0 +1,33 @@
+#custom-openlayers-block {
+  position: fixed;
+  top: 0;
+  right: -400px; 
+  width: 400px;
+  height: 100%;
+  background-color: white;
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
+  transition: right 0.3s ease-in-out; 
+  z-index: 999; /* Поверх всего контента */
+}
+
+#custom-openlayers-block .close-button {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  cursor: pointer;
+  z-index: 1;
+  padding: 5px 10px;
+  background-color: lightgrey;
+  color: white;
+  border: none;
+  border-radius: 3px;
+}
+
+#custom-openlayers-block .close-button:hover {
+  background-color: silver;
+}
+
+#custom-openlayers-block .content {
+  overflow-y: auto; /* Включаем вертикальную прокрутку, если контента больше, чем блок */
+  max-height: 90%; /* Ограничиваем максимальную высоту блока для прокрутки */
+}

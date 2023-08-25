@@ -1,5 +1,4 @@
 (function ($, Drupal) {
-
   var loadedPointIds = {};
 
   Drupal.behaviors.openlayersGis = {
@@ -7,16 +6,18 @@
 
     attach: function (context, settings) {
       var self = this;
-      $(context).find('main').once().each(function () { self.proc.call(self, this); });
+      $(context)
+        .find('main')
+        .once()
+        .each(function () {
+          self.proc(self);
+        });
 
-      self.map.on('moveend', function ()
-      {
-      self.updatePoints();
+      self.map.on('moveend', function () {
+        self.updatePoints();
       });
-      
-      $(document).ready(function () {
-        Drupal.behaviors.customOpenlayersBlock.loadBlock();
-      });
+
+      self.click();
     },
 
     proc: function (element) {
@@ -35,18 +36,18 @@
       });
 
       // Добавляем ol-ext
-      ol.source.Vector.prototype.clustering = function() {
+      ol.source.Vector.prototype.clustering = function () {
         return new ol.source.Cluster({
-          source: this
+          source: this,
         });
       };
 
       var vectorSource = new ol.source.Vector().clustering();
-    
-          // Создаем слой для кластеров
-          var clusterLayer = new ol.layer.Vector({
-            source: vectorSource,
-            style: function(feature) {
+
+      // Создаем слой для кластеров
+      var clusterLayer = new ol.layer.Vector({
+        source: vectorSource,
+        style: function (feature) {
           var size = feature.get('features') ? feature.get('features').length : 1;
           var style = new ol.style.Style({
             image: new ol.style.Circle({
@@ -82,10 +83,8 @@
         $.ajax({
           url: '/openlayers-gis/getpoint',
           method: 'GET',
-          data: { 'bbox': bbox },
+          data: { bbox: bbox },
           success: function (data) {
-            var points = data;
-
             // Очищаем источник кластеров от точек, которые больше не видны
             self.map.getLayers().forEach(function (layer) {
               if (layer instanceof ol.layer.Vector) {
@@ -100,7 +99,7 @@
             });
 
             // Загружаем только те точки, которые еще не были загружены
-            points.forEach(function (point) {
+            data.forEach(function (point) {
               var featureId = point.id;
               if (!loadedPointIds[featureId]) {
                 loadedPointIds[featureId] = true;
@@ -123,7 +122,6 @@
       }
     },
 
-    // Обработчик события клика на точку на карте
     click: function () {
       var self = this;
       if (self.map) {
@@ -131,23 +129,16 @@
           var feature = self.map.forEachFeatureAtPixel(event.pixel, function (feature) {
             return feature;
           });
-    
+
           if (feature) {
-            var coordinates = feature.getGeometry().getCoordinates();
-            self.popup.setPosition(coordinates);
-    
-            var pointInfo = feature.get('info');
-            Drupal.behaviors.customOpenlayersBlock.showPointInfo({ info: pointInfo });
-    
-            Drupal.behaviors.customOpenlayersBlock.showBlock();
+            var point = feature.getProperties();
+            Drupal.behaviors.customOpenlayersBlock.showPointInfo(point);
           } 
           else {
-            self.popup.setPosition(undefined);
             Drupal.behaviors.customOpenlayersBlock.hideBlock();
           }
         });
       }
     },
   };
-
 })(jQuery, Drupal);

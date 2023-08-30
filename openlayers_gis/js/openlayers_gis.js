@@ -81,7 +81,8 @@
 
     updatePoints: function () {
       var self = this;
-      if (self.map) {
+      if (self.map) 
+      {
         var bounds = self.map.getView().calculateExtent();
         var bbox = bounds.join(',');
 
@@ -92,11 +93,13 @@
           success: function (data) {
             // Очищаем источник кластеров от точек, которые больше не видны
             self.map.getLayers().forEach(function (layer) {
-              if (layer instanceof ol.layer.Vector) {
+              if (layer instanceof ol.layer.Vector) 
+              {
                 var features = layer.getSource().getSource().getFeatures();
                 features.forEach(function (feature) {
                   var featureId = feature.getProperties().id;
-                  if (!loadedPointIds[featureId]) {
+                  if (!loadedPointIds[featureId]) 
+                  {
                     layer.getSource().getSource().removeFeature(feature);
                   }
                 });
@@ -106,7 +109,8 @@
             // Загружаем только те точки, которые еще не были загружены
             data.forEach(function (point) {
               var featureId = point.id;
-              if (!loadedPointIds[featureId]) {
+              if (!loadedPointIds[featureId]) 
+              {
                 loadedPointIds[featureId] = true;
 
                 var feature = new ol.Feature({
@@ -128,43 +132,66 @@
     },
 
     exportButton: function () { 
-      var self = this;
-  var mapCanvas = document.querySelector('.ol-viewport canvas');
-  var mapImage = new Image();
-  mapImage.src = mapCanvas.toDataURL('image/png');
+      var self = this; 
+      var mapCanvas = document.createElement('canvas');
+      var size = self.map.getSize();
 
-  mapImage.onload = function () {
-    var canvas = document.createElement('canvas');
-    canvas.width = mapCanvas.width;
-    canvas.height = mapCanvas.height;
-    var context = canvas.getContext('2d');
-    context.drawImage(mapImage, 0, 0);
+      mapCanvas.width = size[0];
+      mapCanvas.height = size[1];
 
-    // Отрисовываем точки на изображении
-    var clusterLayer = self.map.getLayers().getArray()[1];
-    var features = clusterLayer.getSource().getFeatures();
+      var mapContext = mapCanvas.getContext('2d');
+      var mapViewport = self.map.getViewport();
     
-    features.forEach(function (feature) {
-      var coordinates = feature.getGeometry().getCoordinates();
-      var pixel = self.map.getPixelFromCoordinate(coordinates);
-      
-      // Получаем координаты пикселей на изображении с учетом пропорций
-      var mapImagePixelX = (pixel[0] / self.map.getSize()[0]) * mapCanvas.width;
-      var mapImagePixelY = (pixel[1] / self.map.getSize()[1]) * mapCanvas.height;
-      
-      context.beginPath();
-      context.arc(mapImagePixelX, mapImagePixelY, 5, 0, 2 * Math.PI);
-      context.fillStyle = 'red';
-      context.fill();
-    });
+      self.map.once('rendercomplete', function () {
+        Array.prototype.forEach.call(
+          mapViewport.querySelectorAll('.ol-layer canvas, canvas.ol-layer'),
+          function (canvas) {
 
-    // Скачиваем карту с точками как изображение
-    var imageWithPoints = canvas.toDataURL('image/png');
+        if (canvas.width > 0) 
+        {
+          var opacity = canvas.parentNode.style.opacity || canvas.style.opacity;
+          mapContext.globalAlpha = opacity === '' ? 1 : Number(opacity);
+
+          var matrix;
+          var transform = canvas.style.transform;
+
+          if (transform) 
+          {
+            matrix = transform
+              .match(/^matrix\(([^\(]*)\)$/)[1]
+              .split(',')
+              .map(Number);
+          } 
+          else 
+          {
+            matrix = [
+              parseFloat(canvas.style.width) / canvas.width, 0, 0,
+              parseFloat(canvas.style.height) / canvas.height, 0, 0,
+            ];
+          }
+          CanvasRenderingContext2D.prototype.setTransform.apply(mapContext, matrix);
+          var backgroundColor = canvas.parentNode.style.backgroundColor;
+
+          if (backgroundColor) 
+          {
+            mapContext.fillStyle = backgroundColor;
+            mapContext.fillRect(0, 0, canvas.width, canvas.height);
+          }
+          mapContext.drawImage(canvas, 0, 0);
+        }
+      }
+    );
+
     var link = document.createElement('a');
-    link.href = imageWithPoints;
-    link.download = 'map_with_points.png';
+    link.href = mapCanvas.toDataURL();
+    link.download = 'map.png';
     link.click();
-  };
+
+    mapContext.globalAlpha = 1;
+    mapContext.setTransform(1, 0, 0, 1, 0, 0);
+  });
+
+  self.map.renderSync();
 },
 
     click: function () {

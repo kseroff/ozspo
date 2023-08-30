@@ -11,7 +11,6 @@ class OpenLayersGisController extends ControllerBase {
 
   public function mapPage(Request $request) {
     $output = '<div id="openlayers-gis-map" class="map"></div>';
-    $output .= '<div id="openlayers-gis-popup" class="popup"></div>';
   
     return [
       '#markup' => $output,

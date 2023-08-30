@@ -44,7 +44,7 @@ $fields['longitude'] = BaseFieldDefinition::create('decimal')
   ]);
 
     $fields['info'] = BaseFieldDefinition::create('string')
-      ->setLabel(t('Info'))
+      ->setLabel(t('info'))
       ->setDescription(t('Additional information about the point.'))
       ->setRequired(FALSE)
       ->setSetting('max_length', 255);

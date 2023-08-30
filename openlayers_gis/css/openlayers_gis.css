@@ -1,4 +1,12 @@
-#openlayers-gis-map {
-  width: 100%; 
-  height: 400px;
+
+.print-button {
+  position: absolute;
+  bottom: -5px;
+  left: 450px;
+  z-index: 1000; 
 }
+
+  #openlayers-gis-map {
+    width: 100%;
+    height: 400px;
+  }

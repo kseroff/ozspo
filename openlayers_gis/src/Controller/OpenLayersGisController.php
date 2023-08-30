@@ -17,8 +17,7 @@ class OpenLayersGisController extends ControllerBase {
       '#markup' => $output,
       '#attached' => [
         'library' => [
-          'openlayers_gis/ol',
-          'openlayers_gis/ol-ext',
+          'ljs/ljs_init_lib',
           'openlayers_gis/openlayers_gis',
         ],
         'drupalSettings' => [

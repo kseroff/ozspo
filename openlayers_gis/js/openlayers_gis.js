@@ -6,11 +6,8 @@
 
     attach: function (context, settings) {
       var self = this;
-      $(context)
-        .find('main')
-        .once()
-        .each(function () {
-          self.proc(self);
+      $(context).find('main').once().each(function () {
+          self.proc();
         });
 
       self.map.on('moveend', function () {
@@ -18,9 +15,17 @@
       });
 
       self.click();
+
+      var exportButton = $('<button class="print-button">Скачать карту</button>');
+      $('body').append(exportButton);
+  
+      exportButton.on('click', function () {
+        self.exportButton();
+      });
+
     },
 
-    proc: function (element) {
+    proc: function () {
       this.map = new ol.Map({
         target: 'openlayers-gis-map',
         layers: [
@@ -107,7 +112,7 @@
                 var feature = new ol.Feature({
                   geometry: new ol.geom.Point(ol.proj.fromLonLat([point.longitude, point.latitude])),
                   info: point.info,
-                  id: featureId, // Добавляем ID точки в свойства
+                  id: featureId,
                 });
 
                 self.map.getLayers().forEach(function (layer) {
@@ -122,23 +127,66 @@
       }
     },
 
+    exportButton: function () { 
+      var self = this;
+  var mapCanvas = document.querySelector('.ol-viewport canvas');
+  var mapImage = new Image();
+  mapImage.src = mapCanvas.toDataURL('image/png');
+
+  mapImage.onload = function () {
+    var canvas = document.createElement('canvas');
+    canvas.width = mapCanvas.width;
+    canvas.height = mapCanvas.height;
+    var context = canvas.getContext('2d');
+    context.drawImage(mapImage, 0, 0);
+
+    // Отрисовываем точки на изображении
+    var clusterLayer = self.map.getLayers().getArray()[1];
+    var features = clusterLayer.getSource().getFeatures();
+    
+    features.forEach(function (feature) {
+      var coordinates = feature.getGeometry().getCoordinates();
+      var pixel = self.map.getPixelFromCoordinate(coordinates);
+      
+      // Получаем координаты пикселей на изображении с учетом пропорций
+      var mapImagePixelX = (pixel[0] / self.map.getSize()[0]) * mapCanvas.width;
+      var mapImagePixelY = (pixel[1] / self.map.getSize()[1]) * mapCanvas.height;
+      
+      context.beginPath();
+      context.arc(mapImagePixelX, mapImagePixelY, 5, 0, 2 * Math.PI);
+      context.fillStyle = 'red';
+      context.fill();
+    });
+
+    // Скачиваем карту с точками как изображение
+    var imageWithPoints = canvas.toDataURL('image/png');
+    var link = document.createElement('a');
+    link.href = imageWithPoints;
+    link.download = 'map_with_points.png';
+    link.click();
+  };
+},
+
     click: function () {
       var self = this;
       if (self.map) {
         self.map.on('click', function (event) {
-          var feature = self.map.forEachFeatureAtPixel(event.pixel, function (feature) {
-            return feature;
-          });
+          var features = self.map.getFeaturesAtPixel(event.pixel);
+    
+          if (features && features.length > 0) {
+            for (var i = 0; i < features.length; i++) {
+              var feature = features[i];
+              var points = feature.getProperties();
 
-          if (feature) {
-            var point = feature.getProperties();
-            Drupal.behaviors.customOpenlayersBlock.showPointInfo(point);
-          } 
-          else {
+              Drupal.behaviors.customOpenlayersBlock.showPointInfo([points]);
+            }
+          } else {
             Drupal.behaviors.customOpenlayersBlock.hideBlock();
           }
         });
+
       }
     },
+    
   };
 })(jQuery, Drupal);

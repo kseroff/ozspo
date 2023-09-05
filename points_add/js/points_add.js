@@ -1,8 +1,11 @@
-(function ($, Drupal, drupalSettings) {
+(function ($, Drupal) {
 
   var mapInitialized = false;
   var vectorSource = new ol.source.Vector();
-  var markerLayer; // хранения маркеров
+  var map;
+  var markerLayer; // хранение маркеров
+  var selectedMarker = 'default'; // начальный выбор маркера
+  var markerFeature; // переменная для хранения текущего маркера
 
   Drupal.behaviors.pointsAddMap = {
     attach: function (context, settings) {
@@ -13,9 +16,7 @@
     },
 
     proc: function () {
-      var self = this;
-
-      var map = new ol.Map({
+      map = new ol.Map({
         target: 'map',
         layers: [
           new ol.layer.Tile({
@@ -25,6 +26,7 @@
         view: new ol.View({
           center: ol.proj.fromLonLat([45.0174, 53.1959]),
           zoom: 12,
+          minZoom: 4,
         }),
       });
 
@@ -40,24 +42,52 @@
         $('#latitude').val(lonLat[1]);
         $('#longitude').val(lonLat[0]);
 
+        updateMarker(coordinate);
+      });
+
+      // Определите функцию для обновления маркера на карте
+      function updateMarker(coordinate) {
         // Очистка предыдущих маркеров
         vectorSource.clear();
 
-        // Создание маркера и добавление в хранилище
-        var marker = new ol.Feature({
+        markerFeature = new ol.Feature({
           geometry: new ol.geom.Point(coordinate),
         });
-        vectorSource.addFeature(marker);
 
-        //стиль маркера
-        marker.setStyle(new ol.style.Style({
-          image: new ol.style.Circle({
-            radius: 6,
-            fill: new ol.style.Fill({color: 'red'}),
-          }),
-        }));
+        if (selectedMarker === 'default') {
+          // Если выбрана стандартная красная точка
+          markerFeature.setStyle(new ol.style.Style({
+            image: new ol.style.Circle({
+              radius: 6,
+              fill: new ol.style.Fill({color: 'red'}),
+            }),
+          }));
+        } 
+        else 
+        {
+          // Иначе, использовать выбранный изображение маркера
+          markerFeature.setStyle(new ol.style.Style({
+            image: new ol.style.Icon({
+              src: '/modules/points_add/image/' + selectedMarker,
+              scale: 0.1,
+            }),
+          }));
+        }
+
+        vectorSource.addFeature(markerFeature);
+      }
+
+      // Обработчик изменения выбора маркера
+      $('#edit-marker').on('change', function () {
+        selectedMarker = $(this).val();
+        if (markerFeature) {
+          // Если на карте уже есть маркер, обновить
+          var markerGeometry = markerFeature.getGeometry();
+          var markerCoordinates = markerGeometry.getCoordinates();
+          updateMarker(markerCoordinates);
+        }
       });
     },
   };
 
-})(jQuery, Drupal, drupalSettings);
+})(jQuery, Drupal);

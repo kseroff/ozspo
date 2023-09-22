@@ -1,7 +1,0 @@
-points_add.add_point_form:
-  path: '/points/add'
-  defaults:
-    _form: '\Drupal\points_add\Form\AddPointForm'
-    _title: 'Добавление точки'
-  requirements:
-    _permission: 'access content'

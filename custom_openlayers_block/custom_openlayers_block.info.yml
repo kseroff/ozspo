@@ -1,5 +1,0 @@
-name: 'Custom OpenLayers Block'
-type: module
-core: 8.x
-dependencies:
-  - drupal:openlayers_gis

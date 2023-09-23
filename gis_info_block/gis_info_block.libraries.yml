@@ -1,0 +1,13 @@
+gis_info_block:
+  version: 1.x
+  js:
+    js/gis_info_block.js: {}
+  css:
+    theme:
+      css/gis_info_block.css: {}
+  dependencies:
+    - core/drupal
+    - core/jquery
+    - core/jquery.once
+    - core/drupalSettings
+    - gis_openlayers/gis_openlayers

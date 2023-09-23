@@ -1,0 +1,15 @@
+gis_openlayers:
+  version: 1.x
+  js:
+    js/ol_test.js: {}
+    js/ol.js: {}
+    js/ol-ext.js: {}
+    js/gis_openlayers.js: {}
+  css:
+    component:
+      css/gis_openlayers.css: {}
+  dependencies:
+    - core/jquery
+    - core/drupalSettings
+    - core/underscore
+    - core/jquery.once

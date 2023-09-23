@@ -1,0 +1,11 @@
+gis_points_add:
+  version: 1.x
+  js:
+    js/gis_points_add.js: {}
+  css:
+    theme:
+      css/gis_points_add.css: {}
+  dependencies:
+    - core/jquery
+    - core/drupalSettings
+    - gis_openlayers/ol

@@ -1,0 +1,5 @@
+name: 'Points Add'
+type: module
+core: 8.x
+dependencies:
+  - drupal:gis_openlayers

@@ -1,0 +1,13 @@
+.print-button {
+  position: absolute;
+  bottom: -20px;
+  left: 240px;
+  z-index: 1000; 
+}
+
+#openlayers-gis-map {
+  margin-left: 225px;
+  width: 80%;
+  height: 400px;
+  display: inline-block;
+}

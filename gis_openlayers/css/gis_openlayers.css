@@ -1,13 +1,18 @@
-.print-button {
-  position: absolute;
-  bottom: -20px;
-  left: 240px;
-  z-index: 1000; 
+#openlayers-gis-map {
+  width: 100%;
+  height: 500px;
+  display: inline-block;
 }
 
-#openlayers-gis-map {
-  margin-left: 225px;
-  width: 80%;
-  height: 400px;
+.main{
+  display: flex;
+}
+
+.layerSwitcher {
   display: inline-block;
+  width: 20em;
+  background: #cdf;
+  padding: 0.5em;
+  margin-left: 0.5em;
+  border-radius: 5px;
 }

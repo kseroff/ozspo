@@ -1,201 +1,281 @@
 (function ($, Drupal) {
-  var currentLayer = null;
-  
+  var layers = {};
+  var loadedPoints = {};
+  var myLayersGroup;
+  var switcher;
+
   Drupal.behaviors.openlayersGis = {
     map: null,
-    loadedPoints: {},
 
     attach: function (context, settings) {
       var self = this;
+       
+        $(context).find('main').once().each(function () {
+          switcher = new ol.control.LayerSwitcher({});
+          self.proc();
+          self.printDialog();
+        });
+  
+        self.map.on('moveend', function () {
+          self.updatePoints();
+        });
+  
+        self.click();
 
-      $(context).find('main').once().each(function () {
-        self.proc();
-      });
-
-      $('#gis-layers-block #layer-toggle').on('change', function () {
-        self.toggleLayerVisibility(this.checked);
-      });
-
-      self.map.on('moveend', function () {
-        self.updatePoints();
-      });
-
-      self.click();
-
-      var exportButton = $('<button class="print-button">Скачать карту</button>');
-      $('#openlayers-gis-map').append(exportButton);
-
-      exportButton.on('click', function () {
-        self.exportButton();
-      });
+        document.addEventListener('fullscreenchange', function () {
+          self.toggleLayerSwitcherInMap();
+        });
 
     },
 
     proc: function () {
-      this.map = new ol.Map({
-        target: 'openlayers-gis-map',
+
+      var layers=[
+        new ol.layer.Group({
+          openInLayerSwitcher: true,
+          title: 'Base layers',
         layers: [
           new ol.layer.Tile({
+            title: 'OSM',
             source: new ol.source.OSM(),
           }),
+          new ol.layer.Graticule({
+            title: 'Graticule',
+            strokeStyle: new ol.style.Stroke({
+              color: 'rgba(255,120,0,0.9)',
+              width: 2,
+              lineDash: [0.5, 4]
+            }),
+            showLabels: true,
+            wrapX: false
+          })
         ],
+      }),
+      ];
+
+      layers.push(      
+        myLayersGroup = new ol.layer.Group({
+        layers: [],
+        name: 'MyLayers',
+      }));
+
+      this.map = new ol.Map({
+        target: 'openlayers-gis-map',
+        layers: layers,
         view: new ol.View({
           center: ol.proj.fromLonLat([45.0174, 53.1959]),
-          zoom: 12,
+          rotation: 0,
+          zoom: 10,
           minZoom: 4,
         }),
+        controls: ol.control.defaults().extend([ 
+          new ol.control.ZoomSlider(),
+          new ol.control.FullScreen(),
+        ]),
       });
 
-      ol.source.Vector.prototype.clustering = function () {
-        return new ol.source.Cluster({
-          source: this,
+      //добавляет layerswicher снаружи от карты карты
+      var lswitcher = new ol.control.LayerSwitcher({
+        target:$(".layerSwitcher").get(0), 
+        show_progress:true,
+      });
+      this.map.addControl(lswitcher);
+
+      var search = $('<input>').attr('placeholder','filter');
+      function filterLayers(rex, layers) {
+        var found = false;
+        layers.forEach(function(l){
+          // Layer Group
+          if (l.getLayers) {
+            if (filterLayers(rex, l.getLayers().getArray())) {
+              l.set('noLayer', false);
+              found = true;
+            } else {
+              l.set('noLayer', true);
+            }
+          } else {
+            if (rex.test(l.get('title'))) {
+              l.setVisible(true);
+              found = true;
+            } else {
+              l.setVisible(false);
+            }
+          }
         });
-      };
-
-      var vectorSource = new ol.source.Vector().clustering();
-
-      currentLayer = new ol.layer.Vector({
-        source: vectorSource,
-        style: function (feature) {
-          var size = feature.get('features') ? feature.get('features').length : 1;
-          var style = new ol.style.Style({
-            image: new ol.style.Circle({
-              radius: 10,
-              fill: new ol.style.Fill({
-                color: 'red',
-              }),
-            }),
-            text: new ol.style.Text({
-              text: size.toString(),
-              fill: new ol.style.Fill({
-                color: '#fff',
-              }),
-            }),
-          });
-          return style;
-        },
+        return found;
+      }
+      search.on('keyup change', function(){
+        var rex = new RegExp(search.val());
+        filterLayers(rex, layers);
+        // Force layer switcher redraw
+        // layers[0].changed();
+      });
+      lswitcher.setHeader(search.get(0));
+    
+      lswitcher.on('drawlist', function(e) {
+        if (e.layer.getLayers) {
+          if (e.layer.get('noLayer')) {
+            $(e.li).hide();
+          } else {
+            $(e.li).show();
+          }
+        } else {
+          var rex = new RegExp(search.val());
+          if (rex.test(e.layer.get('title'))) {
+            $(e.li).show();
+          } else {
+            $(e.li).hide();
+          }
+        }
       });
 
-      this.map.addLayer(currentLayer);
+      function customCoordinateFormat(coordinate) {
+        const latitude = coordinate[1];
+        const longitude = coordinate[0];
+        const formattedLatitude = latitude >= 0 ? latitude.toFixed(4) + '°N' : (-latitude).toFixed(4) + '°S';
+        const formattedLongitude = longitude >= 0 ? longitude.toFixed(4) + '°E' : (-longitude).toFixed(4) + '°W';
+        return formattedLatitude + ', ' + formattedLongitude;
+      }
+      
+      this.map.addControl(new ol.control.MousePosition({
+        coordinateFormat: customCoordinateFormat,
+        projection: 'EPSG:4326',
+      }));
 
-      this.popup = new ol.Overlay({
-        element: document.getElementById('openlayers-gis-popup'),
-      });
-      this.map.addOverlay(this.popup);
+      this.map.addControl(new ol.control.CanvasScaleLine());
+
     },
 
-    updatePoints: function () {
-      var self = this;
-      if (currentLayer) {
-        var bounds = self.map.getView().calculateExtent();
-        var bbox = bounds.join(',');
+    //добавляет layerswicher внутри карты(при открытие полноэкранного режима)
+    toggleLayerSwitcherInMap: function () {
+      var isFullScreen = document.fullscreenElement !== null;
 
-        $.ajax({
-          url: '/gis-openlayers/getpoints',
-          method: 'GET',
-          data: { bbox: bbox },
-          success: function (data) {
-            // Очищаем источник кластеров от точек, которые больше не видны
-            currentLayer.getSource().getSource().getFeatures().forEach(function (feature) {
-              var featureId = feature.getProperties().id;
-              if (!self.loadedPoints[featureId]) {
-                currentLayer.getSource().getSource().removeFeature(feature);
+      if (isFullScreen) {
+        this.map.addControl(switcher);
+      } else {
+        this.map.removeControl(switcher);
+      }
+    },
+   
+    updatePoints: function () {
+
+      var self = this;
+      var bounds = self.map.getView().calculateExtent();
+      
+      $.ajax({
+        url: '/gis-openlayers/getlayersandpoints',
+        method: 'GET',
+        success: function (data) {
+    
+          data.forEach(function (layerPoint) {
+            var layerId = layerPoint.id;
+            var layerMarkerSvg = layerPoint.marker_svg;
+
+            // Создаем новый слой для этой сущности, если его еще нет.
+            if (!layers[layerId]) {
+              var clusterSource = new ol.source.Cluster({
+                distance: 20,
+                source: new ol.source.Vector({
+                  features: [],
+                }),
+              });
+              var layer = new ol.layer.Vector({
+                source: clusterSource,
+                style: function (feature) {
+                 // var features = feature.get('features');
+                 // var size = features.length;
+                  var style = new ol.style.Style({
+                    image: new ol.style.Icon({
+                      src: layerMarkerSvg,
+                      scale: 0.13,
+                    }),
+                    // text: new ol.style.Text({
+                    //   text: size.toString(),
+                    // }),
+                  });
+                  return style;
+                },
+                visible: true,
+              });
+              layer.set('title', layerPoint.layer_name);
+              myLayersGroup.getLayers().push(layer);
+
+              layers[layerId] = layer;
+            }
+
+            layers[layerId].getSource().getSource().getFeatures().forEach(function (feature) {
+              if (!self.pointIsVisible(feature.getGeometry(), bounds)) {
+                layers[layerId].getSource().getSource().removeFeature(feature);
+                delete loadedPoints[feature.getProperties().id];
               }
             });
 
-            // Загружаем только новые точки и отмечаем их как загруженные.
-            data.forEach(function (point) {
+            // Добавляем точки в соответствующий слой.
+            layerPoint.points.forEach(function (point) {
               var featureId = point.id;
-              if (!self.loadedPoints[featureId]) {
-                self.loadedPoints[featureId] = true;
-
+              if  (!loadedPoints[featureId] && 
+                self.pointIsVisible(new ol.geom.Point(ol.proj.fromLonLat([point.longitude, point.latitude])), bounds))  
+                {
                 var feature = new ol.Feature({
                   geometry: new ol.geom.Point(ol.proj.fromLonLat([point.longitude, point.latitude])),
+                  title: point.point_name,
                   info: point.info,
                   id: featureId,
                 });
+                layers[layerId].getSource().getSource().addFeature(feature);
 
-                currentLayer.getSource().getSource().addFeature(feature);
+                // Отмечаем точку как уже отображенную.
+                loadedPoints[featureId] = true;
               }
             });
-          },
-        });
-      }
+          });
+        },
+      });
     },
 
-    toggleLayerVisibility: function (visible) {
-      if (currentLayer) {
-        currentLayer.setVisible(visible);
-        if (visible) {
-          this.updatePoints();
-        } 
-        else {
-          currentLayer.getSource().clear();
-        }
-      }
+    pointIsVisible: function (geometry, bounds) {
+      var geometryExtent = geometry.getExtent();
+      return ol.extent.intersects(geometryExtent, bounds);
     },
 
-    exportButton: function () { 
+    printDialog: function () { 
       var self = this; 
-      var mapCanvas = document.createElement('canvas');
-      var size = self.map.getSize();
 
-      mapCanvas.width = size[0];
-      mapCanvas.height = size[1];
+      self.map.addControl(new ol.control.CanvasTitle({ 
+        title: 'Название', 
+        visible: false,
+        style: new ol.style.Style({ text: new ol.style.Text({ font: '20px "Lucida Grande",Verdana,Geneva,Lucida,Arial,Helvetica,sans-serif'}) })
+      }));
+      
+      var printControl = new ol.control.PrintDialog();
+      printControl.setSize('A4');
+      self.map.addControl(printControl);
+      
+      /* On print > save image file */
+      printControl.on(['print', 'error'], function(e) {
+        // Print success
 
-      var mapContext = mapCanvas.getContext('2d');
-      var mapViewport = self.map.getViewport();
-    
-      self.map.once('rendercomplete', function () {
-        Array.prototype.forEach.call(
-          mapViewport.querySelectorAll('.ol-layer canvas, canvas.ol-layer'),
-          function (canvas) {
-
-        if (canvas.width > 0) 
-        {
-          var opacity = canvas.parentNode.style.opacity || canvas.style.opacity;
-          mapContext.globalAlpha = opacity === '' ? 1 : Number(opacity);
-
-          var matrix;
-          var transform = canvas.style.transform;
-
-          if (transform) 
-          {
-            matrix = transform
-              .match(/^matrix\(([^\(]*)\)$/)[1]
-              .split(',')
-              .map(Number);
-          } 
-          else 
-          {
-            matrix = [
-              parseFloat(canvas.style.width) / canvas.width, 0, 0,
-              parseFloat(canvas.style.height) / canvas.height, 0, 0,
-            ];
+        if (e.image) {
+          if (e.pdf) {
+            // Export pdf using the print info
+            var pdf = new jsPDF({
+              orientation: e.print.orientation,
+              unit: e.print.unit,
+              format: e.print.size
+            });
+            pdf.addImage(e.image, 'JPEG', e.print.position[0], e.print.position[0], e.print.imageWidth, e.print.imageHeight);
+            pdf.save(e.print.legend ? 'legend.pdf' : 'map.pdf');
+          } else  {
+            // сохранить картинку или файл
+            e.canvas.toBlob(function(blob) {
+              var name = (e.print.legend ? 'legend.' : 'map.')+e.imageType.replace('image/','');
+              saveAs(blob, name);
+            }, e.imageType, e.quality);
           }
-          CanvasRenderingContext2D.prototype.setTransform.apply(mapContext, matrix);
-          var backgroundColor = canvas.parentNode.style.backgroundColor;
-
-          if (backgroundColor) 
-          {
-            mapContext.fillStyle = backgroundColor;
-            mapContext.fillRect(0, 0, canvas.width, canvas.height);
-          }
-          mapContext.drawImage(canvas, 0, 0);
+        } else {
+          console.warn('No canvas to export');
         }
-      }
-    );
-
-    var link = document.createElement('a');
-    link.href = mapCanvas.toDataURL();
-    link.download = 'map.png';
-    link.click();
-
-    mapContext.globalAlpha = 1;
-    mapContext.setTransform(1, 0, 0, 1, 0, 0);
-  });
-
-  self.map.renderSync();
+      });
 },
 
 click: function () {

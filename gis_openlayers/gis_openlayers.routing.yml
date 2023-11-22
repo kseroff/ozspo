@@ -6,9 +6,17 @@ gis_openlayers.map:
     _permission: 'access content'
 
 gis_openlayers.getpoint:
-  path: '/gis-openlayers/getpoints'
+  path: '/gis-openlayers/getlayersandpoints'
   defaults:
-    _controller: '\Drupal\gis_openlayers\Controller\OpenLayersGisController::getPointsData'
+    _controller: '\Drupal\gis_openlayers\Controller\OpenLayersGisController::getLayersAndPointsData'
   requirements:
     _permission: 'access content'
+
+gis_openlayers.add_point_form:
+  path: '/gis-openlayers/layer-add'
+  defaults:
+    _form: '\Drupal\gis_openlayers\Form\AddPointForm'
+  requirements:
+    _permission: 'access content'
+
 

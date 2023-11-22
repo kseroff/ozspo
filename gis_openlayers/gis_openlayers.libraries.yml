@@ -1,15 +1,31 @@
-gis_openlayers:
-  version: 1.x
+openlayers:
   js:
-    js/ol_test.js: {}
-    js/ol.js: {}
-    js/ol-ext.js: {}
-    js/gis_openlayers.js: {}
+    js/polyfill.js: {}
+    js/main_ol.js: {}
+    js/main_ol-ext.js: {}
   css:
     component:
-      css/gis_openlayers.css: {}
+      css/ol.css: {}
+      css/main_ol-ext.css: {}
   dependencies:
     - core/jquery
     - core/drupalSettings
     - core/underscore
     - core/jquery.once
+
+gis_openlayers:
+  js:
+    js/gis_openlayers.js: {}
+    js/gis_info_block.js: {}
+    js/jspdf.es.js: {}
+  css:
+    component:
+      css/gis_openlayers.css: {}
+      css/gis_info_block.css: {}
+
+gis_layer_add:
+  js:
+    js/gis_points_add.js: {}
+  css:
+    component:
+      css/gis_points_add.css: {}

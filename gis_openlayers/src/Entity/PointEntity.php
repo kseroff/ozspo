@@ -50,6 +50,29 @@ $fields['info'] = BaseFieldDefinition::create('string')
   ->setRequired(FALSE)
   ->setSetting('max_length', 255);
 
+  $fields['point_name'] = BaseFieldDefinition::create('string')
+  ->setLabel(t('Название точки'))
+  ->setDescription(t('Название для этой точки.'))
+  ->setRequired(FALSE)
+  ->setSetting('max_length', 255);
+
+  $fields['layer_entity'] = BaseFieldDefinition::create('entity_reference')
+  ->setLabel(t('Слой'))
+  ->setDescription(t('Связанный слой для этой точки.'))
+  ->setSetting('target_type', 'layers_entity')
+  ->setRequired(TRUE)
+  ->setDisplayOptions('form', [
+    'type' => 'entity_reference_autocomplete',
+    'settings' => [
+      'match_operator' => 'CONTAINS',
+      'size' => '60',
+      'placeholder' => '',
+    ],
+    'weight' => 5,
+  ])
+  ->setDisplayConfigurable('form', TRUE)
+  ->setDisplayConfigurable('view', TRUE);
+
     return $fields;
   }
 

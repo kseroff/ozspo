@@ -1,0 +1,49 @@
+#gis_info_block {
+  position: fixed;
+  top: 0;
+  right: -400px; 
+  width: 400px;
+  height: 100%;
+  background-color: white;
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
+  transition: right 0.3s ease-in-out; 
+  z-index: 999; /* Поверх всего контента */
+}
+
+#gis_info_block .close-button {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  cursor: pointer;
+  z-index: 1;
+  padding: 5px 10px;
+  background-color: lightgrey;
+  color: white;
+  border: none;
+  border-radius: 3px;
+}
+
+#gis_info_block .close-button:hover {
+  background-color: silver;
+}
+
+#gis_info_block .content {
+  font-size: 25px;
+  color: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow-y: auto; 
+  max-height: 90%;
+  
+}
+
+#gis_info_block .point-info {
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+#gis_info_block .point-gap {
+  height: 100%;
+}
